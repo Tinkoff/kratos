@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/ory/kratos/metrics/prometheus"
 
@@ -153,7 +154,11 @@ func sqa(cmd *cobra.Command, d driver.Driver) *metricsx.Service {
 			BuildHash:    d.Registry().BuildHash(),
 			BuildTime:    d.Registry().BuildDate(),
 			Config: &analytics.Config{
-				Endpoint: "https://sqa.ory.sh",
+				Endpoint:             "https://sqa.ory.sh",
+				GzipCompressionLevel: 6,
+				BatchMaxSize:         500 * 1000,
+				BatchSize:            250,
+				Interval:             time.Hour * 24,
 			},
 		},
 	)
