@@ -28,11 +28,12 @@ type (
 		SecretsSession() [][]byte
 		SessionSameSiteMode() http.SameSite
 		SessionDomain() string
+		SessionName() string
 		SessionPath() string
 	}
 	ManagerHTTP struct {
 		c          managerHTTPConfiguration
-		cookieName string
+		cookieName func() string
 		r          managerHTTPDependencies
 	}
 )
@@ -42,9 +43,11 @@ func NewManagerHTTP(
 	r managerHTTPDependencies,
 ) *ManagerHTTP {
 	return &ManagerHTTP{
-		c:          c,
-		r:          r,
-		cookieName: DefaultSessionCookieName,
+		c: c,
+		r: r,
+		cookieName: func() string {
+			return c.SessionName()
+		},
 	}
 }
 
@@ -62,24 +65,7 @@ func (s *ManagerHTTP) CreateToRequest(ctx context.Context, w http.ResponseWriter
 
 func (s *ManagerHTTP) SaveToRequest(ctx context.Context, w http.ResponseWriter, r *http.Request, session *Session) error {
 	_ = s.r.CSRFHandler().RegenerateToken(w, r)
-	cookie, _ := s.r.CookieManager().Get(r, s.cookieName)
-	if s.c.SessionDomain() != "" {
-		cookie.Options.Domain = s.c.SessionDomain()
-	}
-
-	if s.c.SessionPath() != "" {
-		cookie.Options.Path = s.c.SessionPath()
-	}
-
-	if s.c.SessionSameSiteMode() != 0 {
-		cookie.Options.SameSite = s.c.SessionSameSiteMode()
-	}
-
-	cookie.Options.MaxAge = 0
-	if s.c.SessionPersistentCookie() {
-		cookie.Options.MaxAge = int(s.c.SessionLifespan().Seconds())
-	}
-
+	cookie, _ := s.r.CookieManager().Get(r, s.cookieName())
 	cookie.Values["sid"] = session.ID.String()
 	if err := cookie.Save(r, w); err != nil {
 		return errors.WithStack(err)
@@ -88,7 +74,7 @@ func (s *ManagerHTTP) SaveToRequest(ctx context.Context, w http.ResponseWriter, 
 }
 
 func (s *ManagerHTTP) FetchFromRequest(ctx context.Context, r *http.Request) (*Session, error) {
-	cookie, err := s.r.CookieManager().Get(r, s.cookieName)
+	cookie, err := s.r.CookieManager().Get(r, s.cookieName())
 	if err != nil {
 		return nil, errors.WithStack(ErrNoActiveSessionFound.WithWrap(err).WithDebugf("%s", err))
 	}
@@ -116,7 +102,7 @@ func (s *ManagerHTTP) FetchFromRequest(ctx context.Context, r *http.Request) (*S
 }
 
 func (s *ManagerHTTP) PurgeFromRequest(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
-	cookie, _ := s.r.CookieManager().Get(r, s.cookieName)
+	cookie, _ := s.r.CookieManager().Get(r, s.cookieName())
 	cookie.Options.MaxAge = -1
 	if err := cookie.Save(r, w); err != nil {
 		return errors.WithStack(err)

@@ -81,7 +81,7 @@ func TestLogoutHandler(t *testing.T) {
 
 		var found bool
 		for _, c := range res.Cookies() {
-			if c.Name == session.DefaultSessionCookieName {
+			if c.Name == configuration.DefaultSessionCookieName {
 				found = true
 			}
 		}

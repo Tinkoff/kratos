@@ -68,6 +68,7 @@ type Provider interface {
 	SessionPersistentCookie() bool
 	SessionSameSiteMode() http.SameSite
 	SessionDomain() string
+	SessionName() string
 	SessionPath() string
 
 	SelfServiceStrategy(strategy string) *SelfServiceStrategy
