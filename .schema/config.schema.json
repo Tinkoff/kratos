@@ -880,6 +880,12 @@
               "title": "Session Cookie Domain",
               "description": "Sets the session cookie domain. Useful when dealing with subdomains. Use with care!"
             },
+            "name": {
+              "title": "Session Cookie Name",
+              "description": "Sets the session cookie name. Use with care!",
+              "type": "string",
+              "default": "ory_kratos_session"
+            },
             "persistent": {
               "title": "Make Session Cookie Persistent",
               "description": "If set to true will persist the cookie in the end-user's browser using the `max-age` parameter which is set to the `session.lifespan` value. Persistent cookies are not deleted when the browser is closed (e.g. on reboot or alt+f4).",

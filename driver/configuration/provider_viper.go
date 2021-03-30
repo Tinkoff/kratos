@@ -38,6 +38,9 @@ const DefaultSQLiteMemoryDSN = "sqlite://:memory:?_fk=true"
 
 const UnknownVersion = "unknown version"
 
+// DefaultSessionCookieName returns the default cookie name for the kratos session.
+const DefaultSessionCookieName = "ory_kratos_session"
+
 const (
 	ViperKeyDSN = "dsn"
 
@@ -58,6 +61,7 @@ const (
 	ViperKeySessionLifespan         = "session.lifespan"
 	ViperKeySessionSameSite         = "session.cookie.same_site"
 	ViperKeySessionDomain           = "session.cookie.domain"
+	ViperKeySessionName             = "session.cookie.name"
 	ViperKeySessionPath             = "session.cookie.path"
 	ViperKeySessionPersistentCookie = "session.cookie.persistent"
 
@@ -117,6 +121,10 @@ func NewViperProvider(l *logrusx.Logger, dev bool) *ViperProvider {
 
 func (p *ViperProvider) SessionDomain() string {
 	return viperx.GetString(p.l, ViperKeySessionDomain, "")
+}
+
+func (p *ViperProvider) SessionName() string {
+	return viperx.GetString(p.l, ViperKeySessionName, DefaultSessionCookieName)
 }
 
 func (p *ViperProvider) SessionPath() string {

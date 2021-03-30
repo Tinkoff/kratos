@@ -89,6 +89,7 @@ func NewCSRFHandler(
 	n.SetFailureHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		logger.
 			WithField("expected_token", nosurf.Token(r)).
+			WithField("received_cookies", r.Cookies()).
 			WithField("received_token", r.Form.Get("csrf_token")).
 			WithField("received_token_form", r.PostForm.Get("csrf_token")).
 			Warn("A request failed due to a missing or invalid csrf_token value")
