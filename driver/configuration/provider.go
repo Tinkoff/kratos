@@ -71,6 +71,8 @@ type Provider interface {
 	SessionName() string
 	SessionPath() string
 
+	ContinuityName() string
+
 	SelfServiceStrategy(strategy string) *SelfServiceStrategy
 
 	SelfServiceFlowLoginUI() *url.URL

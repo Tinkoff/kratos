@@ -913,6 +913,18 @@
         }
       }
     },
+    "continuity": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "title": "Continuity Cookie Name",
+          "description": "Sets the continuity cookie name.",
+          "type": "string",
+          "default": "ory_kratos_continuity"
+        }
+      }
+    },
     "version": {
       "allOf": [
         {

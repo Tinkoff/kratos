@@ -41,6 +41,8 @@ const UnknownVersion = "unknown version"
 // DefaultSessionCookieName returns the default cookie name for the kratos session.
 const DefaultSessionCookieName = "ory_kratos_session"
 
+const DefaultContinuityCookieName = "ory_kratos_continuity"
+
 const (
 	ViperKeyDSN = "dsn"
 
@@ -64,6 +66,8 @@ const (
 	ViperKeySessionName             = "session.cookie.name"
 	ViperKeySessionPath             = "session.cookie.path"
 	ViperKeySessionPersistentCookie = "session.cookie.persistent"
+
+	ViperKeyContinuityName = "continuity.name"
 
 	ViperKeySelfServiceStrategyConfig = "selfservice.strategies"
 
@@ -129,6 +133,10 @@ func (p *ViperProvider) SessionName() string {
 
 func (p *ViperProvider) SessionPath() string {
 	return viperx.GetString(p.l, ViperKeySessionPath, "")
+}
+
+func (p *ViperProvider) ContinuityName() string {
+	return viperx.GetString(p.l, ViperKeyContinuityName, DefaultContinuityCookieName)
 }
 
 func (p *ViperProvider) HasherArgon2() *HasherArgon2Config {
