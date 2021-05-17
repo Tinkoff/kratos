@@ -30,12 +30,12 @@ require (
 	github.com/gobuffalo/uuid v2.0.5+incompatible
 	github.com/gofrs/uuid v3.2.0+incompatible
 	github.com/golang/gddo v0.0.0-20190904175337-72a348e765d2
-	github.com/golang/mock v1.3.1
+	github.com/golang/mock v1.4.4
 	github.com/google/go-github/v27 v27.0.1
 	github.com/google/go-jsonnet v0.15.1-0.20200415122941-8a0084e64395
-	github.com/google/uuid v1.1.1
+	github.com/google/uuid v1.1.2
 	github.com/gorilla/context v1.1.1
-	github.com/gorilla/sessions v1.1.3
+	github.com/gorilla/sessions v1.2.1
 	github.com/hashicorp/consul/api v1.5.0
 	github.com/hashicorp/go-hclog v0.14.1 // indirect
 	github.com/hashicorp/go-immutable-radix v1.2.0 // indirect
@@ -43,12 +43,13 @@ require (
 	github.com/hashicorp/serf v0.9.2 // indirect
 	github.com/imdario/mergo v0.3.7
 	github.com/jteeuwen/go-bindata v3.0.7+incompatible
-	github.com/julienschmidt/httprouter v1.2.0
+	github.com/julienschmidt/httprouter v1.3.0
 	github.com/justinas/nosurf v1.1.0
 	github.com/leodido/go-urn v1.1.0 // indirect
 	github.com/markbates/pkger v0.17.0
 	github.com/mattn/goveralls v0.0.5
 	github.com/mikefarah/yq v1.15.0
+	github.com/minio/minio v0.0.0-20210516060309-ce3d9dc9faa5 // indirect
 	github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826
 	github.com/op/go-logging v0.0.0-20160315200505-970db520ece7 // indirect
 	github.com/ory/analytics-go/v4 v4.0.1
@@ -65,18 +66,18 @@ require (
 	github.com/ory/x v0.0.146
 	github.com/phayes/freeport v0.0.0-20180830031419-95f893ade6f2
 	github.com/pkg/errors v0.9.1
-	github.com/prometheus/client_golang v1.4.0
-	github.com/prometheus/common v0.9.1
+	github.com/prometheus/client_golang v1.8.0
+	github.com/prometheus/common v0.14.0
 	github.com/shurcooL/go v0.0.0-20180423040247-9e1955d9fb6e
-	github.com/sirupsen/logrus v1.6.0
+	github.com/sirupsen/logrus v1.8.0
 	github.com/spf13/cobra v1.0.0
 	github.com/sqs/goreturns v0.0.0-20181028201513-538ac6014518
 	github.com/stretchr/testify v1.6.1
-	github.com/tidwall/gjson v1.3.5
-	github.com/tidwall/sjson v1.0.4
+	github.com/tidwall/gjson v1.7.5
+	github.com/tidwall/sjson v1.1.6
 	github.com/urfave/negroni v1.0.0
-	golang.org/x/crypto v0.0.0-20200709230013-948cd5f35899
+	golang.org/x/crypto v0.0.0-20210421170649-83a5a9bb288b
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
-	golang.org/x/tools v0.0.0-20200717024301-6ddee64345a6
+	golang.org/x/tools v0.1.1
 	gopkg.in/go-playground/validator.v9 v9.28.0
 )

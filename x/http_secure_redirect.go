@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/golang/gddo/httputil"
+	"github.com/minio/minio/pkg/wildcard"
 	"github.com/pkg/errors"
 
 	"github.com/ory/herodot"
@@ -87,7 +88,7 @@ func SecureRedirectTo(r *http.Request, defaultReturnTo *url.URL, opts ...SecureR
 	var found bool
 	for _, allowed := range o.whitelist {
 		if strings.EqualFold(allowed.Scheme, returnTo.Scheme) &&
-			strings.EqualFold(allowed.Host, returnTo.Host) &&
+			wildcard.Match(allowed.Host, returnTo.Host) &&
 			strings.HasPrefix(
 				stringsx.Coalesce(returnTo.Path, "/"),
 				stringsx.Coalesce(allowed.Path, "/")) {
