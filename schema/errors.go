@@ -92,10 +92,10 @@ func (r *ValidationErrorContextDuplicateCredentialsError) AddContext(_, _ string
 
 func (r *ValidationErrorContextDuplicateCredentialsError) FinishInstanceContext() {}
 
-func NewDuplicateCredentialsError() error {
+func NewDuplicateCredentialsError(reason string) error {
 	return errors.WithStack(&ValidationError{
 		ValidationError: &jsonschema.ValidationError{
-			Message:     `an account with the same identifier (email, phone, username, ...) exists already`,
+			Message:     fmt.Sprintf("an account with the same identifier (email, phone, username, ...) exists already: %s", reason),
 			InstancePtr: "#/",
 			Context:     &ValidationErrorContextDuplicateCredentialsError{},
 		},
