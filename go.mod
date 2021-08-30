@@ -4,7 +4,6 @@ go 1.14
 
 require (
 	github.com/Masterminds/sprig/v3 v3.0.0
-	github.com/alecthomas/units v0.0.0-20190924025748-f65c72e2690d // indirect
 	github.com/arbovm/levenshtein v0.0.0-20160628152529-48b4e1c0c4d0
 	github.com/armon/go-metrics v0.3.3 // indirect
 	github.com/bxcodec/faker/v3 v3.3.1
@@ -37,7 +36,6 @@ require (
 	github.com/gorilla/context v1.1.1
 	github.com/gorilla/sessions v1.2.1
 	github.com/hashicorp/consul/api v1.5.0
-	github.com/hashicorp/go-hclog v0.14.1 // indirect
 	github.com/hashicorp/go-immutable-radix v1.2.0 // indirect
 	github.com/hashicorp/golang-lru v0.5.4
 	github.com/hashicorp/serf v0.9.2 // indirect
@@ -49,9 +47,8 @@ require (
 	github.com/markbates/pkger v0.17.0
 	github.com/mattn/goveralls v0.0.5
 	github.com/mikefarah/yq v1.15.0
-	github.com/minio/minio v0.0.0-20210516060309-ce3d9dc9faa5 // indirect
+	github.com/minio/minio v0.0.0-20210516060309-ce3d9dc9faa5
 	github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826
-	github.com/op/go-logging v0.0.0-20160315200505-970db520ece7 // indirect
 	github.com/ory/analytics-go/v4 v4.0.1
 	github.com/ory/cli v0.0.12
 	github.com/ory/dockertest v3.3.5+incompatible

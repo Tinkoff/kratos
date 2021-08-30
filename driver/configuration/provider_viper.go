@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/pkg/errors"
 	"net/http"
 	"net/url"
 	"os"
@@ -11,8 +12,6 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/pkg/errors"
-
 	"github.com/ory/x/logrusx"
 	"github.com/ory/x/stringsx"
 	"github.com/ory/x/tracing"
@@ -269,11 +268,10 @@ func (p *ViperProvider) SelfServiceFlowRegistrationAfterHooks(strategy string) [
 }
 
 func (p *ViperProvider) SelfServiceStrategy(strategy string) *SelfServiceStrategy {
-	var s SelfServiceStrategy
-	if err := viperx.UnmarshalKey(ViperKeySelfServiceStrategyConfig+"."+strategy, &s); err != nil {
+	s, err:= fetchSelfServiceStrategy(strategy)
+	if err!=nil{
 		p.l.WithError(errors.WithStack(err)).Fatalf("Unable to encode values from configuration for strategy %s", strategy)
 	}
-
 	// FIXME The default value can for some reason not be set from the JSON Schema. This is a workaround.
 	// FIXME see https://github.com/ory/x/issues/169
 	if viper.Get(fmt.Sprintf("%s.%s.enabled", ViperKeySelfServiceStrategyConfig, strategy)) == nil {
@@ -557,4 +555,23 @@ func (p *ViperProvider) selfServiceReturnTo(key string, strategy string) *url.UR
 
 func (p *ViperProvider) ConfigVersion() string {
 	return viperx.GetString(p.l, ViperKeyVersion, UnknownVersion)
+}
+
+func fetchSelfServiceStrategy(strategy string) (SelfServiceStrategy, error){
+	strategyConfig:= viper.Get(ViperKeySelfServiceStrategyConfig+"."+strategy)
+	if strategyConfig == nil{
+		strategyConfig = map[string]interface{}{}
+	}
+
+	blob, err:= json.Marshal(strategyConfig)
+	if err !=nil{
+		return SelfServiceStrategy{}, err
+	}
+
+	var s SelfServiceStrategy
+	if err = json.Unmarshal(blob, &s); err!=nil{
+		return SelfServiceStrategy{}, err
+	}
+
+	return s, nil
 }
