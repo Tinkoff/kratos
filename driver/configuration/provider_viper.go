@@ -560,7 +560,7 @@ func (p *ViperProvider) ConfigVersion() string {
 func fetchSelfServiceStrategy(strategy string) (SelfServiceStrategy, error){
 	strategyConfig:= viper.Get(ViperKeySelfServiceStrategyConfig+"."+strategy)
 	if strategyConfig == nil{
-		strategyConfig = map[string]interface{}{}
+		return SelfServiceStrategy{}, nil
 	}
 
 	blob, err:= json.Marshal(strategyConfig)
