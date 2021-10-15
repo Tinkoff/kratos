@@ -21,6 +21,11 @@ type ProviderGenericOIDC struct {
 	public *url.URL
 }
 
+type ProviderActions interface {
+	Claims(v interface{}) error
+	Verifier(config *gooidc.Config) *gooidc.IDTokenVerifier
+}
+
 func NewProviderGenericOIDC(
 	config *Configuration,
 	public *url.URL,
@@ -39,7 +44,7 @@ func (g *ProviderGenericOIDC) provider(ctx context.Context) (*gooidc.Provider, e
 	if g.p == nil {
 		p, err := gooidc.NewProvider(context.Background(), g.config.IssuerURL)
 		if err != nil {
-			return nil, errors.WithStack(herodot.ErrInternalServerError.WithReasonf("Unable to initialize OpenID Connect Provider: %s", err))
+			return nil, errors.WithStack(herodot.ErrInternalServerError.WithReasonf("Unable to initialize OpenID Connect ProviderMicrosoftOIDC: %s", err))
 		}
 		g.p = p
 	}
@@ -81,7 +86,7 @@ func (g *ProviderGenericOIDC) AuthCodeURLOptions(r request) []oauth2.AuthCodeOpt
 	return []oauth2.AuthCodeOption{}
 }
 
-func (g *ProviderGenericOIDC) verifyAndDecodeClaimsWithProvider(ctx context.Context, provider *gooidc.Provider, raw string) (*Claims, error) {
+func (g *ProviderGenericOIDC) verifyAndDecodeClaimsWithProvider(ctx context.Context, provider ProviderActions, raw string) (*Claims, error) {
 	token, err := provider.
 		Verifier(&gooidc.Config{
 			ClientID: g.config.ClientID,

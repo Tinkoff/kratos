@@ -268,8 +268,8 @@ func (p *ViperProvider) SelfServiceFlowRegistrationAfterHooks(strategy string) [
 }
 
 func (p *ViperProvider) SelfServiceStrategy(strategy string) *SelfServiceStrategy {
-	s, err:= fetchSelfServiceStrategy(strategy)
-	if err!=nil{
+	s, err := fetchSelfServiceStrategy(strategy)
+	if err != nil {
 		p.l.WithError(errors.WithStack(err)).Fatalf("Unable to encode values from configuration for strategy %s", strategy)
 	}
 	// FIXME The default value can for some reason not be set from the JSON Schema. This is a workaround.
@@ -557,19 +557,19 @@ func (p *ViperProvider) ConfigVersion() string {
 	return viperx.GetString(p.l, ViperKeyVersion, UnknownVersion)
 }
 
-func fetchSelfServiceStrategy(strategy string) (SelfServiceStrategy, error){
-	strategyConfig:= viper.Get(ViperKeySelfServiceStrategyConfig+"."+strategy)
-	if strategyConfig == nil{
+func fetchSelfServiceStrategy(strategy string) (SelfServiceStrategy, error) {
+	strategyConfig := viper.Get(ViperKeySelfServiceStrategyConfig + "." + strategy)
+	if strategyConfig == nil {
 		return SelfServiceStrategy{}, nil
 	}
 
-	blob, err:= json.Marshal(strategyConfig)
-	if err !=nil{
+	blob, err := json.Marshal(strategyConfig)
+	if err != nil {
 		return SelfServiceStrategy{}, err
 	}
 
 	var s SelfServiceStrategy
-	if err = json.Unmarshal(blob, &s); err!=nil{
+	if err = json.Unmarshal(blob, &s); err != nil {
 		return SelfServiceStrategy{}, err
 	}
 
