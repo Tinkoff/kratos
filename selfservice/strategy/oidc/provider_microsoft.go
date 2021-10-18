@@ -114,7 +114,7 @@ func (m *ProviderMicrosoft) newProvider(ctx context.Context, issuer string, appI
 	wellKnown := strings.TrimSuffix(issuer, "/") + "/.well-known/openid-configuration"
 
 	if appId != "" {
-		wellKnown = wellKnown + "?" + appId
+		wellKnown = wellKnown + "?appid=" + appId
 	}
 
 	req, err := http.NewRequest("GET", wellKnown, nil)
