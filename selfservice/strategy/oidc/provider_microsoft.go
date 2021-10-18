@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/ory/kratos/x"
 	"io/ioutil"
 	"mime"
 	"net/http"
@@ -59,12 +60,14 @@ var supportedAlgorithms = map[string]bool{
 
 func NewProviderMicrosoft(
 	config *Configuration,
+	loggingProvider x.LoggingProvider,
 	public *url.URL,
 ) *ProviderMicrosoft {
 	return &ProviderMicrosoft{
 		ProviderGenericOIDC: &ProviderGenericOIDC{
 			config: config,
 			public: public,
+			l:      loggingProvider.Logger(),
 		},
 	}
 }
@@ -94,6 +97,8 @@ func (m *ProviderMicrosoft) OAuth2(_ context.Context) (*oauth2.Config, error) {
 		TokenURL: endpointPrefix + "/oauth2/v2.0/token",
 	}
 
+	m.l.Infof("Configuring Oauth 2.0 provider from endpoint %s", endpointPrefix)
+
 	return m.oauth2ConfigFromEndpoint(endpoint), nil
 }
 
@@ -105,7 +110,7 @@ func doRequest(ctx context.Context, req *http.Request) (*http.Response, error) {
 	return client.Do(req.WithContext(ctx))
 }
 
-func newProvider(ctx context.Context, issuer string, appId string) (*ProviderMicrosoftOIDC, error) {
+func (m *ProviderMicrosoft) newProvider(ctx context.Context, issuer string, appId string) (*ProviderMicrosoftOIDC, error) {
 	wellKnown := strings.TrimSuffix(issuer, "/") + "/.well-known/openid-configuration"
 
 	if appId != "" {
@@ -116,6 +121,8 @@ func newProvider(ctx context.Context, issuer string, appId string) (*ProviderMic
 	if err != nil {
 		return nil, err
 	}
+
+	m.l.Infof("requesting openid configuration from %s", wellKnown)
 	resp, err := doRequest(ctx, req)
 	if err != nil {
 		return nil, err
@@ -146,7 +153,10 @@ func newProvider(ctx context.Context, issuer string, appId string) (*ProviderMic
 			algs = append(algs, a)
 		}
 	}
-	return &ProviderMicrosoftOIDC{
+
+	m.l.Infof("oidc discovery configuration %v", p)
+
+	pm := &ProviderMicrosoftOIDC{
 		issuer:       p.Issuer,
 		authURL:      p.AuthURL,
 		tokenURL:     p.TokenURL,
@@ -154,7 +164,11 @@ func newProvider(ctx context.Context, issuer string, appId string) (*ProviderMic
 		algorithms:   algs,
 		rawClaims:    body,
 		remoteKeySet: gooidc.NewRemoteKeySet(ctx, p.JWKSURL),
-	}, nil
+	}
+
+	m.l.Infof("provider configuration %v", pm)
+
+	return pm, nil
 }
 
 // Claims unmarshals raw fields returned by the server during discovery.
@@ -194,12 +208,15 @@ func (p *ProviderMicrosoftOIDC) Verifier(config *gooidc.Config) *gooidc.IDTokenV
 
 func (m *ProviderMicrosoft) Claims(ctx context.Context, exchange *oauth2.Token) (*Claims, error) {
 	raw, ok := exchange.Extra("id_token").(string)
+
 	if !ok || len(raw) == 0 {
 		return nil, errors.WithStack(ErrIDTokenMissing)
 	}
 
+	m.l.Infof("received id token %s", raw)
 	parser := new(jwt.Parser)
 	unverifiedClaims := microsoftUnverifiedClaims{}
+
 	if _, _, err := parser.ParseUnverified(raw, &unverifiedClaims); err != nil {
 		return nil, err
 	}
@@ -209,7 +226,8 @@ func (m *ProviderMicrosoft) Claims(ctx context.Context, exchange *oauth2.Token) 
 	}
 
 	issuer := "https://login.microsoftonline.com/" + unverifiedClaims.TenantID + "/v2.0"
-	p, err := newProvider(context.Background(), issuer, m.Config().AppID)
+	p, err := m.newProvider(ctx, issuer, m.Config().AppID)
+
 	if err != nil {
 		return nil, errors.WithStack(herodot.ErrInternalServerError.WithReasonf("Unable to initialize OpenID Connect ProviderMicrosoftOIDC: %s", err))
 	}

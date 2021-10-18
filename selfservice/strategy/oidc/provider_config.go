@@ -1,6 +1,7 @@
 package oidc
 
 import (
+	"github.com/ory/kratos/x"
 	"net/url"
 	"strings"
 
@@ -75,18 +76,18 @@ type ConfigurationCollection struct {
 	Providers []Configuration `json:"providers"`
 }
 
-func (c ConfigurationCollection) Provider(id string, public *url.URL) (Provider, error) {
+func (c ConfigurationCollection) Provider(id string, lp x.LoggingProvider, public *url.URL) (Provider, error) {
 	for _, p := range c.Providers {
 		if p.ID == id {
 			switch p.Provider {
 			case "generic":
-				return NewProviderGenericOIDC(&p, public), nil
+				return NewProviderGenericOIDC(&p, lp, public), nil
 			case "google":
 				return NewProviderGoogle(&p, public), nil
 			case "github":
 				return NewProviderGitHub(&p, public), nil
 			case "microsoft":
-				return NewProviderMicrosoft(&p, public), nil
+				return NewProviderMicrosoft(&p, lp, public), nil
 			}
 			return nil, errors.Errorf("provider type %s is not supported, supported are: %v", p.Provider, []string{"generic", "google", "github", "microsoft"})
 		}

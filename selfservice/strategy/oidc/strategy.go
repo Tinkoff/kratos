@@ -400,7 +400,7 @@ func (s *Strategy) Config() (*ConfigurationCollection, error) {
 func (s *Strategy) provider(id string) (Provider, error) {
 	if c, err := s.Config(); err != nil {
 		return nil, err
-	} else if provider, err := c.Provider(id, s.c.SelfPublicURL()); err != nil {
+	} else if provider, err := c.Provider(id, s.d, s.c.SelfPublicURL()); err != nil {
 		return nil, err
 	} else {
 		return provider, nil

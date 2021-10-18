@@ -2,6 +2,8 @@ package oidc
 
 import (
 	"context"
+	"github.com/ory/kratos/x"
+	"github.com/ory/x/logrusx"
 	"net/url"
 
 	"github.com/pkg/errors"
@@ -19,6 +21,7 @@ type ProviderGenericOIDC struct {
 	p      *gooidc.Provider
 	config *Configuration
 	public *url.URL
+	l      *logrusx.Logger
 }
 
 type ProviderActions interface {
@@ -28,11 +31,13 @@ type ProviderActions interface {
 
 func NewProviderGenericOIDC(
 	config *Configuration,
+	loggingProvider x.LoggingProvider,
 	public *url.URL,
 ) *ProviderGenericOIDC {
 	return &ProviderGenericOIDC{
 		config: config,
 		public: public,
+		l:      loggingProvider.Logger(),
 	}
 }
 
@@ -42,7 +47,7 @@ func (g *ProviderGenericOIDC) Config() *Configuration {
 
 func (g *ProviderGenericOIDC) provider(ctx context.Context) (*gooidc.Provider, error) {
 	if g.p == nil {
-		p, err := gooidc.NewProvider(context.Background(), g.config.IssuerURL)
+		p, err := gooidc.NewProvider(ctx, g.config.IssuerURL)
 		if err != nil {
 			return nil, errors.WithStack(herodot.ErrInternalServerError.WithReasonf("Unable to initialize OpenID Connect ProviderMicrosoftOIDC: %s", err))
 		}
