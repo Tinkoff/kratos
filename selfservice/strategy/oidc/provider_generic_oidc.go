@@ -2,7 +2,6 @@ package oidc
 
 import (
 	"context"
-	"github.com/ory/kratos/x"
 	"github.com/ory/x/logrusx"
 	"net/url"
 
@@ -31,13 +30,13 @@ type ProviderActions interface {
 
 func NewProviderGenericOIDC(
 	config *Configuration,
-	loggingProvider x.LoggingProvider,
+	logger *logrusx.Logger,
 	public *url.URL,
 ) *ProviderGenericOIDC {
 	return &ProviderGenericOIDC{
 		config: config,
 		public: public,
-		l:      loggingProvider.Logger(),
+		l:      logger,
 	}
 }
 

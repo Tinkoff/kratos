@@ -73,7 +73,7 @@ func (s *Strategy) linkedProviders(conf *ConfigurationCollection, confidential *
 
 	var result []Provider
 	for _, p := range available.Providers {
-		prov, err := conf.Provider(p.Provider, s.d, s.c.SelfPublicURL())
+		prov, err := conf.Provider(p.Provider, s.d.Logger(), s.c.SelfPublicURL())
 		if err != nil {
 			return nil, err
 		}
@@ -103,7 +103,7 @@ func (s *Strategy) linkableProviders(conf *ConfigurationCollection, confidential
 		}
 
 		if !found {
-			prov, err := conf.Provider(p.ID, s.d, s.c.SelfPublicURL())
+			prov, err := conf.Provider(p.ID, s.d.Logger(), s.c.SelfPublicURL())
 			if err != nil {
 				return nil, err
 			}

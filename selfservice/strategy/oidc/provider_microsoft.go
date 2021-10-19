@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/ory/kratos/x"
+	"github.com/ory/x/logrusx"
 	"io/ioutil"
 	"mime"
 	"net/http"
@@ -60,14 +60,14 @@ var supportedAlgorithms = map[string]bool{
 
 func NewProviderMicrosoft(
 	config *Configuration,
-	loggingProvider x.LoggingProvider,
+	logger *logrusx.Logger,
 	public *url.URL,
 ) *ProviderMicrosoft {
 	return &ProviderMicrosoft{
 		ProviderGenericOIDC: &ProviderGenericOIDC{
 			config: config,
 			public: public,
-			l:      loggingProvider.Logger(),
+			l:      logger,
 		},
 	}
 }
@@ -122,8 +122,9 @@ func (m *ProviderMicrosoft) newProvider(ctx context.Context, issuer string, appI
 		return nil, err
 	}
 
-	m.l.Infof("requesting openid configuration from %s", wellKnown)
+	m.l.Tracef("requesting openid configuration from %s", wellKnown)
 	resp, err := doRequest(ctx, req)
+
 	if err != nil {
 		return nil, err
 	}
@@ -154,7 +155,7 @@ func (m *ProviderMicrosoft) newProvider(ctx context.Context, issuer string, appI
 		}
 	}
 
-	m.l.Infof("oidc discovery configuration %v", p)
+	m.l.Tracef("oidc discovery configuration %T", p)
 
 	pm := &ProviderMicrosoftOIDC{
 		issuer:       p.Issuer,
@@ -166,12 +167,12 @@ func (m *ProviderMicrosoft) newProvider(ctx context.Context, issuer string, appI
 		remoteKeySet: gooidc.NewRemoteKeySet(ctx, p.JWKSURL),
 	}
 
-	m.l.Infof("provider configuration %v", pm)
+	m.l.Tracef("provider configuration %T", *pm)
 
 	return pm, nil
 }
 
-// Claims unmarshals raw fields returned by the server during discovery.
+// Claims unmarshalls raw fields returned by the server during discovery.
 //
 //    var claims struct {
 //        ScopesSupported []string `json:"scopes_supported"`
@@ -203,6 +204,7 @@ func (p *ProviderMicrosoftOIDC) Verifier(config *gooidc.Config) *gooidc.IDTokenV
 		cp.SupportedSigningAlgs = p.algorithms
 		config = cp
 	}
+
 	return gooidc.NewVerifier(p.issuer, p.remoteKeySet, config)
 }
 
@@ -213,7 +215,7 @@ func (m *ProviderMicrosoft) Claims(ctx context.Context, exchange *oauth2.Token) 
 		return nil, errors.WithStack(ErrIDTokenMissing)
 	}
 
-	m.l.Infof("received id token %s", raw)
+	m.l.Tracef("received id token %s", raw)
 	parser := new(jwt.Parser)
 	unverifiedClaims := microsoftUnverifiedClaims{}
 
