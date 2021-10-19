@@ -207,13 +207,12 @@ func (p *ProviderMicrosoftOIDC) Verifier(config *gooidc.Config) *gooidc.IDTokenV
 }
 
 func (m *ProviderMicrosoft) Claims(ctx context.Context, exchange *oauth2.Token) (*Claims, error) {
-	raw, ok := exchange.Extra("id_token").(string)
+	raw := exchange.AccessToken // try to use access token instead of id_token because of missing claims
 
-	if !ok || len(raw) == 0 {
+	if len(raw) == 0 {
 		return nil, errors.WithStack(ErrIDTokenMissing)
 	}
 
-	m.l.Infof("received id token %s", raw)
 	parser := new(jwt.Parser)
 	unverifiedClaims := microsoftUnverifiedClaims{}
 
