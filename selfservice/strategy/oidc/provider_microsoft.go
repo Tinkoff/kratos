@@ -235,7 +235,7 @@ func (p *ProviderMicrosoft) Claims(ctx context.Context, exchange *oauth2.Token) 
 		return nil, errors.WithStack(herodot.ErrBadRequest.WithReasonf("Cannot verify id token: %s", err))
 	}
 
-	p.l.Infof("Id token claims %T", *claimsIdToken)
+	p.l.Infof("Id token claims %+v", claimsIdToken)
 
 	if err := token.VerifyAccessToken(rawAccessToken); err != nil {
 		return nil, errors.WithStack(herodot.ErrBadRequest.WithReasonf("Cannot verify access token: %s", err))
@@ -247,13 +247,13 @@ func (p *ProviderMicrosoft) Claims(ctx context.Context, exchange *oauth2.Token) 
 		return nil, errors.WithStack(herodot.ErrBadRequest.WithReasonf("Cannot decode access token: %s", err))
 	}
 
-	p.l.Infof("Access token claims %T", *claimsAccessToken)
+	p.l.Infof("Access token claims %+v", claimsAccessToken)
 
 	if err := mergo.Merge(claimsIdToken, *claimsAccessToken); err != nil {
 		return nil, errors.WithStack(herodot.ErrBadRequest.WithReasonf("Cannot merge claims of id token and access token: %s", err))
 	}
 
-	p.l.Infof("Merged claims %T", *claimsIdToken)
+	p.l.Infof("Merged claims %+v", claimsIdToken)
 
 	return claimsIdToken, nil
 }
@@ -273,12 +273,12 @@ func (p *ProviderMicrosoft) verifyAndDecodeIdToken(ctx context.Context, tID, raw
 		Verify(ctx, raw)
 
 	if err != nil {
-		return nil, nil, errors.WithStack(herodot.ErrBadRequest.WithReasonf("%s", err))
+		return nil, nil, errors.WithStack(herodot.ErrBadRequest.WithReasonf("verifier error: %s", err))
 	}
 
 	var claims Claims
 	if err := token.Claims(&claims); err != nil {
-		return nil, nil, errors.WithStack(herodot.ErrBadRequest.WithReasonf("%s", err))
+		return nil, nil, errors.WithStack(herodot.ErrBadRequest.WithReasonf("claims decode error: %s", err))
 	}
 
 	return &claims, token, nil
@@ -292,20 +292,6 @@ func (p *ProviderMicrosoft) decodeAccessToken(raw string) (*Claims, error) {
 	}
 
 	return &claims, nil
-}
-
-func (p *ProviderMicrosoft) verifyAccessTokenAgainstIdToken(ctx context.Context, provider ProviderActions, rawIdToken, rawAccessToken string) error {
-	token, err := provider.
-		Verifier(&gooidc.Config{
-			ClientID: p.config.ClientID,
-		}).
-		Verify(ctx, rawIdToken)
-
-	if err != nil {
-		return errors.WithStack(herodot.ErrBadRequest.WithReasonf("%s", err))
-	}
-
-	return token.VerifyAccessToken(rawAccessToken)
 }
 
 type microsoftUnverifiedClaims struct {
