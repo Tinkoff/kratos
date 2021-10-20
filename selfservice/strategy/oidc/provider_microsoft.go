@@ -142,17 +142,17 @@ func (p *ProviderMicrosoft) newProvider(ctx context.Context, issuer string, appI
 		return nil, fmt.Errorf("%s: %s", resp.Status, body)
 	}
 
-	var pjson providerJSON
-	err = unmarshalResp(resp, body, &p)
+	var pJSON providerJSON
+	err = unmarshalResp(resp, body, &pJSON)
 	if err != nil {
 		return nil, fmt.Errorf("oidc: failed to decode provider discovery object: %v", err)
 	}
 
-	if pjson.Issuer != issuer {
-		return nil, fmt.Errorf("oidc: issuer did not match the issuer returned by provider, expected %q got %q", issuer, pjson.Issuer)
+	if pJSON.Issuer != issuer {
+		return nil, fmt.Errorf("oidc: issuer did not match the issuer returned by provider, expected %q got %q", issuer, pJSON.Issuer)
 	}
 	var algs []string
-	for _, a := range pjson.Algorithms {
+	for _, a := range pJSON.Algorithms {
 		if supportedAlgorithms[a] {
 			algs = append(algs, a)
 		}
@@ -161,13 +161,13 @@ func (p *ProviderMicrosoft) newProvider(ctx context.Context, issuer string, appI
 	p.l.Infof("oidc discovery configuration %v", p)
 
 	pm := &ProviderMicrosoftOIDC{
-		issuer:       pjson.Issuer,
-		authURL:      pjson.AuthURL,
-		tokenURL:     pjson.TokenURL,
-		userInfoURL:  pjson.UserInfoURL,
+		issuer:       pJSON.Issuer,
+		authURL:      pJSON.AuthURL,
+		tokenURL:     pJSON.TokenURL,
+		userInfoURL:  pJSON.UserInfoURL,
 		algorithms:   algs,
 		rawClaims:    body,
-		remoteKeySet: gooidc.NewRemoteKeySet(ctx, pjson.JWKSURL),
+		remoteKeySet: gooidc.NewRemoteKeySet(ctx, pJSON.JWKSURL),
 	}
 
 	p.l.Infof("provider configuration %v", pm)
