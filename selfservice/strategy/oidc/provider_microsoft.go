@@ -238,7 +238,7 @@ func (p *ProviderMicrosoft) Claims(ctx context.Context, exchange *oauth2.Token) 
 	p.l.Infof("Id token claims %+v", claimsIdToken)
 
 	if err := token.VerifyAccessToken(rawAccessToken); err != nil {
-		return nil, errors.WithStack(herodot.ErrBadRequest.WithReasonf("Cannot verify access token: %s", err))
+		p.l.Warnf("Cannot verify access token: %s", err)
 	}
 
 	claimsAccessToken, err := p.decodeAccessToken(rawAccessToken)
