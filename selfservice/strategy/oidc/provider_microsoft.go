@@ -18,6 +18,7 @@ import (
 	"github.com/pkg/errors"
 	"golang.org/x/oauth2"
 
+	"github.com/imdario/mergo"
 	"github.com/ory/herodot"
 )
 
@@ -207,16 +208,17 @@ func (p *ProviderMicrosoftOIDC) Verifier(config *gooidc.Config) *gooidc.IDTokenV
 }
 
 func (m *ProviderMicrosoft) Claims(ctx context.Context, exchange *oauth2.Token) (*Claims, error) {
-	raw := exchange.AccessToken // try to use access token instead of id_token because of missing claims
+	rawIdToken, ok := exchange.Extra("id_token").(string)
+	rawAccessToken := exchange.AccessToken
 
-	if len(raw) == 0 {
+	if !ok || len(rawIdToken) == 0 {
 		return nil, errors.WithStack(ErrIDTokenMissing)
 	}
 
 	parser := new(jwt.Parser)
 	unverifiedClaims := microsoftUnverifiedClaims{}
 
-	if _, _, err := parser.ParseUnverified(raw, &unverifiedClaims); err != nil {
+	if _, _, err := parser.ParseUnverified(rawIdToken, &unverifiedClaims); err != nil {
 		return nil, err
 	}
 
@@ -224,7 +226,38 @@ func (m *ProviderMicrosoft) Claims(ctx context.Context, exchange *oauth2.Token) 
 		return nil, errors.WithStack(herodot.ErrBadRequest.WithReasonf("TenantID claim is not a valid UUID: %s", err))
 	}
 
-	issuer := "https://login.microsoftonline.com/" + unverifiedClaims.TenantID + "/v2.0"
+	claimsIdToken, err := m.verifyAndDecodeIdToken(ctx, unverifiedClaims.TenantID, rawIdToken)
+
+	if err != nil {
+		return nil, errors.WithStack(herodot.ErrBadRequest.WithReasonf("Cannot verify id token: %s", err))
+	}
+
+	m.l.Infof("Id token claims %T", claimsIdToken)
+	claimsAccessToken, err := m.verifyAndDecodeAccessToken(ctx, unverifiedClaims.TenantID, rawAccessToken)
+	m.l.Infof("Access token claims %T", claimsAccessToken)
+
+	if err != nil {
+		return nil, errors.WithStack(herodot.ErrBadRequest.WithReasonf("Cannot verify access token: %s", err))
+	}
+
+	if err := mergo.Merge(claimsIdToken, claimsAccessToken); err != nil {
+		return nil, errors.WithStack(herodot.ErrBadRequest.WithReasonf("Cannot merge claims of id token and access token: %s", err))
+	}
+
+	m.l.Infof("Merged claims %T", claimsIdToken)
+
+	return claimsIdToken, nil
+}
+
+func (m *ProviderMicrosoft) verifyAndDecodeIdToken(ctx context.Context, tID, raw string) (*Claims, error) {
+	return m.verifyAndDecodeClaimsWithIssuer(ctx, "https://login.microsoftonline.com/"+tID+"/v2.0", raw)
+}
+
+func (m *ProviderMicrosoft) verifyAndDecodeAccessToken(ctx context.Context, tID, raw string) (*Claims, error) {
+	return m.verifyAndDecodeClaimsWithIssuer(ctx, "https://sts.windows.net/"+tID, raw)
+}
+
+func (m *ProviderMicrosoft) verifyAndDecodeClaimsWithIssuer(ctx context.Context, issuer string, raw string) (*Claims, error) {
 	p, err := m.newProvider(ctx, issuer, m.Config().AppID)
 
 	if err != nil {
