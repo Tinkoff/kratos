@@ -36,3 +36,7 @@ type Claims struct {
 	PhoneNumberVerified bool   `json:"phone_number_verified,omitempty"`
 	UpdatedAt           int64  `json:"updated_at,omitempty"`
 }
+
+func (*Claims) Valid() error {
+	return nil
+}

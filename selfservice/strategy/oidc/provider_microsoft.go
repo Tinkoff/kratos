@@ -4,12 +4,13 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/ory/kratos/x"
 	"io/ioutil"
 	"mime"
 	"net/http"
 	"net/url"
 	"strings"
+
+	"github.com/ory/kratos/x"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gofrs/uuid"
@@ -87,20 +88,20 @@ type ProviderMicrosoftOIDC struct {
 	remoteKeySet gooidc.KeySet
 }
 
-func (m *ProviderMicrosoft) OAuth2(_ context.Context) (*oauth2.Config, error) {
-	if len(strings.TrimSpace(m.config.Tenant)) == 0 {
-		return nil, errors.WithStack(herodot.ErrInternalServerError.WithReasonf("No Tenant specified for the `microsoft` oidc provider %s", m.config.ID))
+func (p *ProviderMicrosoft) OAuth2(_ context.Context) (*oauth2.Config, error) {
+	if len(strings.TrimSpace(p.config.Tenant)) == 0 {
+		return nil, errors.WithStack(herodot.ErrInternalServerError.WithReasonf("No Tenant specified for the `microsoft` oidc provider %s", p.config.ID))
 	}
 
-	endpointPrefix := "https://login.microsoftonline.com/" + m.config.Tenant
+	endpointPrefix := "https://login.microsoftonline.com/" + p.config.Tenant
 	endpoint := oauth2.Endpoint{
 		AuthURL:  endpointPrefix + "/oauth2/v2.0/authorize",
 		TokenURL: endpointPrefix + "/oauth2/v2.0/token",
 	}
 
-	m.l.Infof("Configuring Oauth 2.0 provider from endpoint %s", endpointPrefix)
+	p.l.Infof("Configuring Oauth 2.0 provider from endpoint %s", endpointPrefix)
 
-	return m.oauth2ConfigFromEndpoint(endpoint), nil
+	return p.oauth2ConfigFromEndpoint(endpoint), nil
 }
 
 func doRequest(ctx context.Context, req *http.Request) (*http.Response, error) {
@@ -111,7 +112,7 @@ func doRequest(ctx context.Context, req *http.Request) (*http.Response, error) {
 	return client.Do(req.WithContext(ctx))
 }
 
-func (m *ProviderMicrosoft) newProvider(ctx context.Context, issuer string, appId string) (*ProviderMicrosoftOIDC, error) {
+func (p *ProviderMicrosoft) newProvider(ctx context.Context, issuer string, appId string) (*ProviderMicrosoftOIDC, error) {
 	wellKnown := strings.TrimSuffix(issuer, "/") + "/.well-known/openid-configuration"
 
 	if appId != "" {
@@ -123,11 +124,13 @@ func (m *ProviderMicrosoft) newProvider(ctx context.Context, issuer string, appI
 		return nil, err
 	}
 
-	m.l.Infof("requesting openid configuration from %s", wellKnown)
+	p.l.Infof("requesting openid configuration from %s", wellKnown)
 	resp, err := doRequest(ctx, req)
+
 	if err != nil {
 		return nil, err
 	}
+
 	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
@@ -139,35 +142,35 @@ func (m *ProviderMicrosoft) newProvider(ctx context.Context, issuer string, appI
 		return nil, fmt.Errorf("%s: %s", resp.Status, body)
 	}
 
-	var p providerJSON
+	var pjson providerJSON
 	err = unmarshalResp(resp, body, &p)
 	if err != nil {
 		return nil, fmt.Errorf("oidc: failed to decode provider discovery object: %v", err)
 	}
 
-	if p.Issuer != issuer {
-		return nil, fmt.Errorf("oidc: issuer did not match the issuer returned by provider, expected %q got %q", issuer, p.Issuer)
+	if pjson.Issuer != issuer {
+		return nil, fmt.Errorf("oidc: issuer did not match the issuer returned by provider, expected %q got %q", issuer, pjson.Issuer)
 	}
 	var algs []string
-	for _, a := range p.Algorithms {
+	for _, a := range pjson.Algorithms {
 		if supportedAlgorithms[a] {
 			algs = append(algs, a)
 		}
 	}
 
-	m.l.Infof("oidc discovery configuration %v", p)
+	p.l.Infof("oidc discovery configuration %v", p)
 
 	pm := &ProviderMicrosoftOIDC{
-		issuer:       p.Issuer,
-		authURL:      p.AuthURL,
-		tokenURL:     p.TokenURL,
-		userInfoURL:  p.UserInfoURL,
+		issuer:       pjson.Issuer,
+		authURL:      pjson.AuthURL,
+		tokenURL:     pjson.TokenURL,
+		userInfoURL:  pjson.UserInfoURL,
 		algorithms:   algs,
 		rawClaims:    body,
-		remoteKeySet: gooidc.NewRemoteKeySet(ctx, p.JWKSURL),
+		remoteKeySet: gooidc.NewRemoteKeySet(ctx, pjson.JWKSURL),
 	}
 
-	m.l.Infof("provider configuration %v", pm)
+	p.l.Infof("provider configuration %v", pm)
 
 	return pm, nil
 }
@@ -207,7 +210,7 @@ func (p *ProviderMicrosoftOIDC) Verifier(config *gooidc.Config) *gooidc.IDTokenV
 	return gooidc.NewVerifier(p.issuer, p.remoteKeySet, config)
 }
 
-func (m *ProviderMicrosoft) Claims(ctx context.Context, exchange *oauth2.Token) (*Claims, error) {
+func (p *ProviderMicrosoft) Claims(ctx context.Context, exchange *oauth2.Token) (*Claims, error) {
 	rawIdToken, ok := exchange.Extra("id_token").(string)
 	rawAccessToken := exchange.AccessToken
 
@@ -226,45 +229,83 @@ func (m *ProviderMicrosoft) Claims(ctx context.Context, exchange *oauth2.Token) 
 		return nil, errors.WithStack(herodot.ErrBadRequest.WithReasonf("TenantID claim is not a valid UUID: %s", err))
 	}
 
-	claimsIdToken, err := m.verifyAndDecodeIdToken(ctx, unverifiedClaims.TenantID, rawIdToken)
+	claimsIdToken, token, err := p.verifyAndDecodeIdToken(ctx, unverifiedClaims.TenantID, rawIdToken)
 
 	if err != nil {
 		return nil, errors.WithStack(herodot.ErrBadRequest.WithReasonf("Cannot verify id token: %s", err))
 	}
 
-	m.l.Infof("Id token claims %T", claimsIdToken)
-	claimsAccessToken, err := m.verifyAndDecodeAccessToken(ctx, unverifiedClaims.TenantID, rawAccessToken)
-	m.l.Infof("Access token claims %T", claimsAccessToken)
+	p.l.Infof("Id token claims %T", *claimsIdToken)
 
-	if err != nil {
+	if err := token.VerifyAccessToken(rawAccessToken); err != nil {
 		return nil, errors.WithStack(herodot.ErrBadRequest.WithReasonf("Cannot verify access token: %s", err))
 	}
 
-	if err := mergo.Merge(claimsIdToken, claimsAccessToken); err != nil {
+	claimsAccessToken, err := p.decodeAccessToken(rawAccessToken)
+
+	if err != nil {
+		return nil, errors.WithStack(herodot.ErrBadRequest.WithReasonf("Cannot decode access token: %s", err))
+	}
+
+	p.l.Infof("Access token claims %T", *claimsAccessToken)
+
+	if err := mergo.Merge(claimsIdToken, *claimsAccessToken); err != nil {
 		return nil, errors.WithStack(herodot.ErrBadRequest.WithReasonf("Cannot merge claims of id token and access token: %s", err))
 	}
 
-	m.l.Infof("Merged claims %T", claimsIdToken)
+	p.l.Infof("Merged claims %T", *claimsIdToken)
 
 	return claimsIdToken, nil
 }
 
-func (m *ProviderMicrosoft) verifyAndDecodeIdToken(ctx context.Context, tID, raw string) (*Claims, error) {
-	return m.verifyAndDecodeClaimsWithIssuer(ctx, "https://login.microsoftonline.com/"+tID+"/v2.0", raw)
-}
-
-func (m *ProviderMicrosoft) verifyAndDecodeAccessToken(ctx context.Context, tID, raw string) (*Claims, error) {
-	return m.verifyAndDecodeClaimsWithIssuer(ctx, "https://sts.windows.net/"+tID, raw)
-}
-
-func (m *ProviderMicrosoft) verifyAndDecodeClaimsWithIssuer(ctx context.Context, issuer string, raw string) (*Claims, error) {
-	p, err := m.newProvider(ctx, issuer, m.Config().AppID)
+func (p *ProviderMicrosoft) verifyAndDecodeIdToken(ctx context.Context, tID, raw string) (*Claims, *gooidc.IDToken, error) {
+	issuer := "https://login.microsoftonline.com/" + tID + "/v2.0"
+	provider, err := p.newProvider(ctx, issuer, p.Config().AppID)
 
 	if err != nil {
-		return nil, errors.WithStack(herodot.ErrInternalServerError.WithReasonf("Unable to initialize OpenID Connect ProviderMicrosoftOIDC: %s", err))
+		return nil, nil, errors.WithStack(herodot.ErrInternalServerError.WithReasonf("Unable to initialize OpenID Connect ProviderMicrosoftOIDC: %s", err))
 	}
 
-	return m.verifyAndDecodeClaimsWithProvider(ctx, p, raw)
+	token, err := provider.
+		Verifier(&gooidc.Config{
+			ClientID: p.config.ClientID,
+		}).
+		Verify(ctx, raw)
+
+	if err != nil {
+		return nil, nil, errors.WithStack(herodot.ErrBadRequest.WithReasonf("%s", err))
+	}
+
+	var claims Claims
+	if err := token.Claims(&claims); err != nil {
+		return nil, nil, errors.WithStack(herodot.ErrBadRequest.WithReasonf("%s", err))
+	}
+
+	return &claims, token, nil
+}
+
+func (p *ProviderMicrosoft) decodeAccessToken(raw string) (*Claims, error) {
+	claims := Claims{}
+	parser := new(jwt.Parser)
+	if _, _, err := parser.ParseUnverified(raw, &claims); err != nil {
+		return nil, errors.WithStack(herodot.ErrBadRequest.WithReasonf("%s", err))
+	}
+
+	return &claims, nil
+}
+
+func (p *ProviderMicrosoft) verifyAccessTokenAgainstIdToken(ctx context.Context, provider ProviderActions, rawIdToken, rawAccessToken string) error {
+	token, err := provider.
+		Verifier(&gooidc.Config{
+			ClientID: p.config.ClientID,
+		}).
+		Verify(ctx, rawIdToken)
+
+	if err != nil {
+		return errors.WithStack(herodot.ErrBadRequest.WithReasonf("%s", err))
+	}
+
+	return token.VerifyAccessToken(rawAccessToken)
 }
 
 type microsoftUnverifiedClaims struct {
