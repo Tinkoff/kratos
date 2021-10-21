@@ -2,8 +2,9 @@ package oidc
 
 import (
 	"context"
-	"github.com/ory/x/logrusx"
 	"net/url"
+
+	"github.com/ory/x/logrusx"
 
 	"github.com/pkg/errors"
 	"golang.org/x/oauth2"

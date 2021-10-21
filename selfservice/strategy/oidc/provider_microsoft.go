@@ -10,7 +10,7 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/ory/kratos/x"
+	"github.com/ory/x/logrusx"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gofrs/uuid"
@@ -112,8 +112,9 @@ func doRequest(ctx context.Context, req *http.Request) (*http.Response, error) {
 	return client.Do(req.WithContext(ctx))
 }
 
-func (p *ProviderMicrosoft) newProvider(ctx context.Context, issuer string, appId string) (*ProviderMicrosoftOIDC, error) {
+func (p *ProviderMicrosoft) newProvider(ctx context.Context, issuer string) (*ProviderMicrosoftOIDC, error) {
 	wellKnown := strings.TrimSuffix(issuer, "/") + "/.well-known/openid-configuration"
+	appId := p.Config().ClientID
 
 	if appId != "" {
 		wellKnown = wellKnown + "?appid=" + appId
@@ -143,7 +144,9 @@ func (p *ProviderMicrosoft) newProvider(ctx context.Context, issuer string, appI
 	}
 
 	var pJSON providerJSON
+
 	err = unmarshalResp(resp, body, &pJSON)
+
 	if err != nil {
 		return nil, fmt.Errorf("oidc: failed to decode provider discovery object: %v", err)
 	}
@@ -151,14 +154,16 @@ func (p *ProviderMicrosoft) newProvider(ctx context.Context, issuer string, appI
 	if pJSON.Issuer != issuer {
 		return nil, fmt.Errorf("oidc: issuer did not match the issuer returned by provider, expected %q got %q", issuer, pJSON.Issuer)
 	}
+
 	var algs []string
+
 	for _, a := range pJSON.Algorithms {
 		if supportedAlgorithms[a] {
 			algs = append(algs, a)
 		}
 	}
 
-	m.l.Infof("oidc discovery configuration %v", p)
+	p.l.Infof("oidc discovery configuration %v", pJSON)
 
 	pm := &ProviderMicrosoftOIDC{
 		issuer:       pJSON.Issuer,
@@ -219,7 +224,7 @@ func (p *ProviderMicrosoft) Claims(ctx context.Context, exchange *oauth2.Token) 
 		return nil, errors.WithStack(ErrIDTokenMissing)
 	}
 
-	m.l.Tracef("received id token %s", raw)
+	p.l.Tracef("received id token %s", rawIdToken)
 	parser := new(jwt.Parser)
 	unverifiedClaims := microsoftUnverifiedClaims{}
 
@@ -262,7 +267,7 @@ func (p *ProviderMicrosoft) Claims(ctx context.Context, exchange *oauth2.Token) 
 
 func (p *ProviderMicrosoft) verifyAndDecodeIdToken(ctx context.Context, tID, raw string) (*Claims, *gooidc.IDToken, error) {
 	issuer := "https://login.microsoftonline.com/" + tID + "/v2.0"
-	provider, err := p.newProvider(ctx, issuer, p.Config().AppID)
+	provider, err := p.newProvider(ctx, issuer)
 
 	if err != nil {
 		return nil, nil, errors.WithStack(herodot.ErrInternalServerError.WithReasonf("Unable to initialize OpenID Connect ProviderMicrosoftOIDC: %s", err))
@@ -279,6 +284,7 @@ func (p *ProviderMicrosoft) verifyAndDecodeIdToken(ctx context.Context, tID, raw
 	}
 
 	var claims Claims
+
 	if err := token.Claims(&claims); err != nil {
 		return nil, nil, errors.WithStack(herodot.ErrBadRequest.WithReasonf("claims decode error: %s", err))
 	}
@@ -289,6 +295,7 @@ func (p *ProviderMicrosoft) verifyAndDecodeIdToken(ctx context.Context, tID, raw
 func (p *ProviderMicrosoft) decodeAccessToken(raw string) (*Claims, error) {
 	claims := Claims{}
 	parser := new(jwt.Parser)
+
 	if _, _, err := parser.ParseUnverified(raw, &claims); err != nil {
 		return nil, errors.WithStack(herodot.ErrBadRequest.WithReasonf("%s", err))
 	}
@@ -306,13 +313,17 @@ func (c *microsoftUnverifiedClaims) Valid() error {
 
 func unmarshalResp(r *http.Response, body []byte, v interface{}) error {
 	err := json.Unmarshal(body, &v)
+
 	if err == nil {
 		return nil
 	}
+
 	ct := r.Header.Get("Content-Type")
 	mediaType, _, parseErr := mime.ParseMediaType(ct)
+
 	if parseErr == nil && mediaType == "application/json" {
 		return fmt.Errorf("got Content-Type = application/json, but could not unmarshal as JSON: %v", err)
 	}
+
 	return fmt.Errorf("expected Content-Type = application/json, got %q: %v", ct, err)
 }

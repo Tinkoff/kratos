@@ -1,9 +1,10 @@
 package oidc
 
 import (
-	"github.com/ory/x/logrusx"
 	"net/url"
 	"strings"
+
+	"github.com/ory/x/logrusx"
 
 	"github.com/pkg/errors"
 
@@ -45,16 +46,6 @@ type Configuration struct {
 	// Can be either `common`, `organizations`, `consumers` for a multitenant application or a specific tenant like
 	// `8eaef023-2b34-4da1-9baa-8bc8c9d6a490` or `contoso.onmicrosoft.com`.
 	Tenant string `json:"tenant"`
-
-	// AppID is the Azure AD AppID to use for authentication, and must be set when `provider` is set to `microsoft`.
-	//
-	// Should be added if your app has custom signing keys as a result of using the claims-mapping feature,
-	// you must append it as query parameter containing the app ID in order to get a jwks_uri pointing to your app's
-	// signing key information.
-	//
-	// For example: https://login.microsoftonline.com/{tenant}/v2.0/.well-known/openid-configuration?appid=6731d...
-	// contains a jwks_uri of https://login.microsoftonline.com/{tenant}/discovery/v2.0/keys?appid=6731de76-14a6...
-	AppID string `json:"app_id"`
 
 	// Scope specifies optional requested permissions.
 	Scope []string `json:"scope"`
