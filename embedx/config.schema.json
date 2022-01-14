@@ -1457,6 +1457,7 @@
                     },
                     "anyOf": [
                       {
+                        "type": "string",
                         "format": "uri"
                       },
                       {
