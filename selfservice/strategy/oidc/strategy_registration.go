@@ -83,6 +83,7 @@ func (s *Strategy) newLinkDecoder(p interface{}, r *http.Request) error {
 
 	if err := s.dec.Decode(r, &p, compiler,
 		decoderx.HTTPKeepRequestBody(true),
+		decoderx.HTTPDecoderSetIgnoreParseErrorsStrategy(decoderx.ParseErrorIgnoreConversionErrors),
 		decoderx.HTTPDecoderSetValidatePayloads(false),
 		decoderx.HTTPDecoderUseQueryAndBody(),
 		decoderx.HTTPDecoderAllowedMethods("POST", "GET"),
