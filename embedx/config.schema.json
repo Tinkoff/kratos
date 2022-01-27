@@ -2020,6 +2020,12 @@
           "description": "Sets the cookie domain for session and CSRF cookies. Useful when dealing with subdomains. Use with care!",
           "type": "string"
         },
+        "name": {
+          "title": "Session Cookie Name",
+          "description": "Sets the session cookie name. Use with care!",
+          "type": "string",
+          "default": "ory_kratos_session"
+        },
         "path": {
           "title": "HTTP  Cookie Path",
           "description": "Sets the session and CSRF cookie path. Use with care!",
@@ -2104,6 +2110,18 @@
             }
           },
           "additionalProperties": false
+        }
+      }
+    },
+    "continuity": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "title": "Continuity Cookie Name",
+          "description": "Sets the continuity cookie name.",
+          "type": "string",
+          "default": "ory_kratos_continuity"
         }
       }
     },

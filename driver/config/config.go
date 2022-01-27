@@ -1117,3 +1117,11 @@ func (p *Config) getTSLCertificates(daemon, certBase64, keyBase64, certPath, key
 	p.l.Infof("TLS has not been configured for %s, skipping", daemon)
 	return nil
 }
+
+func (p *Config) ContinuityName() string {
+	v := p.p.String("continuity.name")
+	if len(v) == 0 {
+		return "ory_kratos_continuity"
+	}
+	return v
+}

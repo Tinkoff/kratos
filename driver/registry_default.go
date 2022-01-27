@@ -90,7 +90,8 @@ type RegistryDefault struct {
 	identityValidator *identity.Validator
 	identityManager   *identity.Manager
 
-	continuityManager continuity.Manager
+	continuityManager      continuity.Manager
+	continuitySessionStore *sessions.CookieStore
 
 	schemaHandler *schema.Handler
 
@@ -592,7 +593,7 @@ func (m *RegistryDefault) Courier(ctx context.Context) *courier.Courier {
 
 func (m *RegistryDefault) ContinuityManager() continuity.Manager {
 	if m.continuityManager == nil {
-		m.continuityManager = continuity.NewManagerCookie(m)
+		m.continuityManager = continuity.NewManagerCookie(m, m.c)
 	}
 	return m.continuityManager
 }
