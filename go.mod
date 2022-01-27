@@ -64,8 +64,9 @@ require (
 	github.com/luna-duclos/instrumentedsql/opentracing v0.0.0-20201103091713-40d03108b6f4
 	github.com/mattn/goveralls v0.0.7
 	github.com/mikefarah/yq v1.15.0
+	github.com/minio/minio v0.0.0-20210516060309-ce3d9dc9faa5
 	github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826
-	github.com/montanaflynn/stats v0.0.0-20171201202039-1bf9dbcd8cbe
+	github.com/montanaflynn/stats v0.6.6
 	github.com/ory/analytics-go/v4 v4.0.2
 	github.com/ory/dockertest/v3 v3.8.1
 	github.com/ory/go-acc v0.2.6
