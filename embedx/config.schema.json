@@ -396,6 +396,14 @@
             "contoso.onmicrosoft.com"
           ]
         },
+        "app_id": {
+          "title": "Azure AD Application ID",
+          "description": "The Azure AD Application ID to use for authentication.",
+          "type": "string",
+          "examples": [
+            "8eaef023-2b34-4da1-9baa-8bc8c9d6a490"
+          ]
+        },
         "team_id": {
           "title": "Apple Developer Team ID",
           "description": "Apple Developer Team ID needed for generating a JWT token for client secret",
