@@ -1,9 +1,11 @@
 package daemon
 
 import (
+	stdctx "context"
 	"crypto/tls"
 	"net/http"
 	"sync"
+	"time"
 
 	"github.com/ory/kratos/selfservice/flow/recovery"
 
@@ -20,8 +22,6 @@ import (
 
 	"github.com/ory/x/healthx"
 	"github.com/ory/x/networkx"
-
-	stdctx "context"
 
 	"github.com/spf13/cobra"
 	"github.com/urfave/negroni"
@@ -259,7 +259,11 @@ func sqa(ctx stdctx.Context, cmd *cobra.Command, d driver.Registry) *metricsx.Se
 			BuildHash:    config.Commit,
 			BuildTime:    config.Date,
 			Config: &analytics.Config{
-				Endpoint: "https://sqa.ory.sh",
+				Endpoint:             "https://sqa.ory.sh",
+				GzipCompressionLevel: 6,
+				BatchMaxSize:         500 * 1000,
+				BatchSize:            250,
+				Interval:             time.Hour * 24,
 			},
 		},
 	)
