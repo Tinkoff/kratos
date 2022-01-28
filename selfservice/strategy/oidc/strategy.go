@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/ory/kratos/cipher"
+	"github.com/ory/x/logrusx"
 
 	"github.com/ory/kratos/text"
 
@@ -308,7 +309,7 @@ func (s *Strategy) handleCallback(w http.ResponseWriter, r *http.Request, ps htt
 		return
 	}
 
-	provider, err := s.provider(r.Context(), r, pid)
+	provider, err := s.provider(r.Context(), r, pid, s.d.Logger())
 	if err != nil {
 		s.forwardError(w, r, req, s.handleError(w, r, req, pid, nil, err))
 		return
@@ -400,10 +401,10 @@ func (s *Strategy) Config(ctx context.Context) (*ConfigurationCollection, error)
 	return &c, nil
 }
 
-func (s *Strategy) provider(ctx context.Context, r *http.Request, id string) (Provider, error) {
+func (s *Strategy) provider(ctx context.Context, r *http.Request, id string, l *logrusx.Logger) (Provider, error) {
 	if c, err := s.Config(ctx); err != nil {
 		return nil, err
-	} else if provider, err := c.Provider(id, s.d.Config(ctx).SelfPublicURL(r)); err != nil {
+	} else if provider, err := c.Provider(id, s.d.Config(ctx).SelfPublicURL(r), l); err != nil {
 		return nil, err
 	} else {
 		return provider, nil

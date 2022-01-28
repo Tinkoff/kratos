@@ -110,7 +110,7 @@ func (s *Strategy) Register(w http.ResponseWriter, r *http.Request, f *registrat
 		return s.handleError(w, r, f, pid, nil, err)
 	}
 
-	provider, err := s.provider(r.Context(), r, pid)
+	provider, err := s.provider(r.Context(), r, pid, s.d.Logger())
 	if err != nil {
 		return s.handleError(w, r, f, pid, nil, err)
 	}

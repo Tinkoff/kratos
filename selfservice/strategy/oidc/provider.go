@@ -41,3 +41,7 @@ type Claims struct {
 	HD                  string               `json:"hd,omitempty"`
 	Team                string               `json:"team,omitempty"`
 }
+
+func (c Claims) Valid() error {
+	return nil
+}
