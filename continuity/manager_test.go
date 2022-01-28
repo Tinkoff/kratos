@@ -128,7 +128,7 @@ func TestManager(t *testing.T) {
 		assert.Contains(t, gjson.GetBytes(body, "error.reason").String(), continuity.ErrNotResumable.ReasonField)
 
 		require.Len(t, res.Cookies(), 1, "continuing the flow with a broken cookie should instruct the browser to forget it")
-		assert.EqualValues(t, res.Cookies()[0].Name, continuity.CookieName)
+		assert.EqualValues(t, res.Cookies()[0].Name, continuity.DefaultCookieName)
 	})
 
 	t.Run("case=can deal with duplicate cookies", func(t *testing.T) {
@@ -165,7 +165,7 @@ func TestManager(t *testing.T) {
 		t.Cleanup(func() { require.NoError(t, res.Body.Close()) })
 
 		require.Len(t, res.Cookies(), 1, "continuing the flow with a broken cookie should instruct the browser to forget it")
-		assert.EqualValues(t, res.Cookies()[0].Name, continuity.CookieName)
+		assert.EqualValues(t, res.Cookies()[0].Name, continuity.DefaultCookieName)
 
 		var b bytes.Buffer
 		require.NoError(t, json.NewEncoder(&b).Encode(tc.expected))
