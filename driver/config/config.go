@@ -16,6 +16,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/ory/kratos/continuity"
 	"golang.org/x/net/publicsuffix"
 
 	"github.com/duo-labs/webauthn/protocol"
@@ -151,6 +152,8 @@ const (
 	ViperKeyWebAuthnRPOrigin                                 = "selfservice.methods.webauthn.config.rp.origin"
 	ViperKeyWebAuthnRPIcon                                   = "selfservice.methods.webauthn.config.rp.issuer"
 	ViperKeyVersion                                          = "version"
+	s
+	ViperKeyContinuityName = "continuity.name"
 )
 
 const (
@@ -1119,9 +1122,8 @@ func (p *Config) getTSLCertificates(daemon, certBase64, keyBase64, certPath, key
 }
 
 func (p *Config) ContinuityName() string {
-	v := p.p.String("continuity.name")
-	if len(v) == 0 {
-		return "ory_kratos_continuity"
+	if !p.p.Exists(ViperKeyContinuityName) {
+		return continuity.DefaultContinuityCookieName
 	}
-	return v
+	return p.p.String(ViperKeyContinuityName)
 }

@@ -19,6 +19,8 @@ import (
 var _ Manager = new(ManagerCookie)
 var ErrNotResumable = *herodot.ErrBadRequest.WithError("session is not resumable").WithReasonf("No resumable session could be found in the HTTP Header.")
 
+const DefaultContinuityCookieName = "ory_kratos_continuity"
+
 type (
 	managerCookieDependencies interface {
 		PersistenceProvider
