@@ -151,6 +151,8 @@ const (
 	ViperKeyWebAuthnRPOrigin                                 = "selfservice.methods.webauthn.config.rp.origin"
 	ViperKeyWebAuthnRPIcon                                   = "selfservice.methods.webauthn.config.rp.issuer"
 	ViperKeyVersion                                          = "version"
+
+	ViperKeyContinuityName = "continuity.name"
 )
 
 const (
@@ -1116,4 +1118,13 @@ func (p *Config) getTSLCertificates(daemon, certBase64, keyBase64, certPath, key
 
 	p.l.Infof("TLS has not been configured for %s, skipping", daemon)
 	return nil
+}
+
+const DefaultContinuityCookieName = "ory_kratos_continuity"
+
+func (p *Config) ContinuityName() string {
+	if !p.p.Exists(ViperKeyContinuityName) {
+		return DefaultContinuityCookieName
+	}
+	return p.p.String(ViperKeyContinuityName)
 }

@@ -30,6 +30,7 @@ func makeOIDCClaims() json.RawMessage {
 func makeAuthCodeURL(t *testing.T, r *login.Flow) string {
 	public, err := url.Parse("https://ory.sh")
 	require.NoError(t, err)
+	l := &x.SimpleLogger{}
 	p := NewProviderGenericOIDC(&Configuration{
 		Provider:        "generic",
 		ID:              "valid",
@@ -38,7 +39,7 @@ func makeAuthCodeURL(t *testing.T, r *login.Flow) string {
 		IssuerURL:       "https://accounts.google.com",
 		Mapper:          "file://./stub/hydra.schema.json",
 		RequestedClaims: makeOIDCClaims(),
-	}, public)
+	}, public, l.Logger())
 	c, err := p.OAuth2(context.Background())
 	require.NoError(t, err)
 	return c.AuthCodeURL("state", p.AuthCodeURLOptions(r)...)

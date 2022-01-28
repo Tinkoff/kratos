@@ -4,6 +4,8 @@ import (
 	"context"
 	"net/url"
 
+	"github.com/ory/x/logrusx"
+
 	"github.com/pkg/errors"
 	"golang.org/x/oauth2"
 
@@ -19,15 +21,23 @@ type ProviderGenericOIDC struct {
 	p      *gooidc.Provider
 	config *Configuration
 	public *url.URL
+	l      *logrusx.Logger
+}
+
+type ProviderActions interface {
+	Claims(v interface{}) error
+	Verifier(config *gooidc.Config) *gooidc.IDTokenVerifier
 }
 
 func NewProviderGenericOIDC(
 	config *Configuration,
 	public *url.URL,
+	logger *logrusx.Logger,
 ) *ProviderGenericOIDC {
 	return &ProviderGenericOIDC{
 		config: config,
 		public: public,
+		l:      logger,
 	}
 }
 
@@ -39,7 +49,7 @@ func (g *ProviderGenericOIDC) provider(ctx context.Context) (*gooidc.Provider, e
 	if g.p == nil {
 		p, err := gooidc.NewProvider(ctx, g.config.IssuerURL)
 		if err != nil {
-			return nil, errors.WithStack(herodot.ErrInternalServerError.WithReasonf("Unable to initialize OpenID Connect Provider: %s", err))
+			return nil, errors.WithStack(herodot.ErrInternalServerError.WithReasonf("Unable to initialize OpenID Connect ProviderMicrosoftOIDC: %s", err))
 		}
 		g.p = p
 	}

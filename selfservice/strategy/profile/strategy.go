@@ -123,6 +123,7 @@ func (s *Strategy) Settings(w http.ResponseWriter, r *http.Request, f *settings.
 
 	if err := s.dc.Decode(r, &p, option,
 		decoderx.HTTPDecoderSetValidatePayloads(true),
+		decoderx.HTTPDecoderSetIgnoreParseErrorsStrategy(decoderx.ParseErrorIgnoreConversionErrors),
 		decoderx.HTTPDecoderJSONFollowsFormFormat(),
 	); err != nil {
 		return ctxUpdate, s.handleSettingsError(w, r, ctxUpdate, nil, &p, err)

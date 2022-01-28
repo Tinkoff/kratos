@@ -83,6 +83,7 @@ func (s *Strategy) newLinkDecoder(p interface{}, r *http.Request) error {
 
 	if err := s.dec.Decode(r, &p, compiler,
 		decoderx.HTTPKeepRequestBody(true),
+		decoderx.HTTPDecoderSetIgnoreParseErrorsStrategy(decoderx.ParseErrorIgnoreConversionErrors),
 		decoderx.HTTPDecoderSetValidatePayloads(false),
 		decoderx.HTTPDecoderUseQueryAndBody(),
 		decoderx.HTTPDecoderAllowedMethods("POST", "GET"),
@@ -109,7 +110,7 @@ func (s *Strategy) Register(w http.ResponseWriter, r *http.Request, f *registrat
 		return s.handleError(w, r, f, pid, nil, err)
 	}
 
-	provider, err := s.provider(r.Context(), r, pid)
+	provider, err := s.provider(r.Context(), r, pid, s.d.Logger())
 	if err != nil {
 		return s.handleError(w, r, f, pid, nil, err)
 	}

@@ -142,7 +142,7 @@ func (s *Strategy) Login(w http.ResponseWriter, r *http.Request, f *login.Flow, 
 		return nil, s.handleError(w, r, f, pid, nil, err)
 	}
 
-	provider, err := s.provider(r.Context(), r, pid)
+	provider, err := s.provider(r.Context(), r, pid, s.d.Logger())
 	if err != nil {
 		return nil, s.handleError(w, r, f, pid, nil, err)
 	}

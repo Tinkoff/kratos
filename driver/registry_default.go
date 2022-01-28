@@ -592,7 +592,7 @@ func (m *RegistryDefault) Courier(ctx context.Context) *courier.Courier {
 
 func (m *RegistryDefault) ContinuityManager() continuity.Manager {
 	if m.continuityManager == nil {
-		m.continuityManager = continuity.NewManagerCookie(m)
+		m.continuityManager = continuity.NewManagerCookie(m, m.c)
 	}
 	return m.continuityManager
 }

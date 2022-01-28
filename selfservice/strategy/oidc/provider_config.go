@@ -5,6 +5,7 @@ import (
 	"net/url"
 	"strings"
 
+	"github.com/ory/x/logrusx"
 	"github.com/pkg/errors"
 
 	"github.com/ory/herodot"
@@ -99,7 +100,7 @@ type ConfigurationCollection struct {
 	Providers []Configuration `json:"providers"`
 }
 
-func (c ConfigurationCollection) Provider(id string, public *url.URL) (Provider, error) {
+func (c ConfigurationCollection) Provider(id string, public *url.URL, l *logrusx.Logger) (Provider, error) {
 	for k := range c.Providers {
 		p := c.Providers[k]
 		if p.ID == id {
@@ -111,7 +112,7 @@ func (c ConfigurationCollection) Provider(id string, public *url.URL) (Provider,
 
 			switch p.Provider {
 			case addProviderName("generic"):
-				return NewProviderGenericOIDC(&p, public), nil
+				return NewProviderGenericOIDC(&p, public, l), nil
 			case addProviderName("google"):
 				return NewProviderGoogle(&p, public), nil
 			case addProviderName("github"):
@@ -121,7 +122,7 @@ func (c ConfigurationCollection) Provider(id string, public *url.URL) (Provider,
 			case addProviderName("gitlab"):
 				return NewProviderGitLab(&p, public), nil
 			case addProviderName("microsoft"):
-				return NewProviderMicrosoft(&p, public), nil
+				return NewProviderMicrosoft(&p, public, l), nil
 			case addProviderName("discord"):
 				return NewProviderDiscord(&p, public), nil
 			case addProviderName("slack"):
