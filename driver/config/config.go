@@ -16,7 +16,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ory/kratos/continuity"
 	"golang.org/x/net/publicsuffix"
 
 	"github.com/duo-labs/webauthn/protocol"
@@ -1121,9 +1120,11 @@ func (p *Config) getTSLCertificates(daemon, certBase64, keyBase64, certPath, key
 	return nil
 }
 
+const DefaultContinuityCookieName = "ory_kratos_continuity"
+
 func (p *Config) ContinuityName() string {
 	if !p.p.Exists(ViperKeyContinuityName) {
-		return continuity.DefaultContinuityCookieName
+		return DefaultContinuityCookieName
 	}
 	return p.p.String(ViperKeyContinuityName)
 }
