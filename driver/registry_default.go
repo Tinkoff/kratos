@@ -90,8 +90,7 @@ type RegistryDefault struct {
 	identityValidator *identity.Validator
 	identityManager   *identity.Manager
 
-	continuityManager      continuity.Manager
-	continuitySessionStore *sessions.CookieStore
+	continuityManager continuity.Manager
 
 	schemaHandler *schema.Handler
 
@@ -448,15 +447,13 @@ func (m *RegistryDefault) CookieManager(ctx context.Context) sessions.Store {
 	return cs
 }
 
-func (m *RegistryDefault) ContinuityCookieManager(_ context.Context) sessions.Store {
-	if m.continuitySessionStore == nil {
-		cs := sessions.NewCookieStore(m.c.SecretsSession()...)
-		cs.Options.Secure = !m.c.IsInsecureDevMode()
-		cs.Options.HttpOnly = true
-		cs.Options.SameSite = http.SameSiteLaxMode
-		m.continuitySessionStore = cs
-	}
-	return m.continuitySessionStore
+func (m *RegistryDefault) ContinuityCookieManager(ctx context.Context) sessions.Store {
+	// To support hot reloading, this can not be instantiated only once.
+	cs := sessions.NewCookieStore(m.Config(ctx).SecretsSession()...)
+	cs.Options.Secure = !m.Config(ctx).IsInsecureDevMode()
+	cs.Options.HttpOnly = true
+	cs.Options.SameSite = http.SameSiteLaxMode
+	return cs
 }
 
 func (m *RegistryDefault) Tracer(ctx context.Context) *tracing.Tracer {
