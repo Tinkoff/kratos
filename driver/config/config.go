@@ -151,7 +151,7 @@ const (
 	ViperKeyWebAuthnRPOrigin                                 = "selfservice.methods.webauthn.config.rp.origin"
 	ViperKeyWebAuthnRPIcon                                   = "selfservice.methods.webauthn.config.rp.issuer"
 	ViperKeyVersion                                          = "version"
-	s
+
 	ViperKeyContinuityName = "continuity.name"
 )
 
