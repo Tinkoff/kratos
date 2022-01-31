@@ -59,6 +59,7 @@ func (s *Strategy) decoderSettings(p *submitSelfServiceSettingsFlowWithOidcMetho
 	if err := s.dec.Decode(r, &p, compiler,
 		decoderx.HTTPKeepRequestBody(true),
 		decoderx.HTTPDecoderUseQueryAndBody(),
+		decoderx.HTTPDecoderSetIgnoreParseErrorsStrategy(decoderx.ParseErrorIgnoreConversionErrors),
 		decoderx.HTTPDecoderSetValidatePayloads(false),
 		decoderx.HTTPDecoderAllowedMethods("POST", "GET"),
 		decoderx.HTTPDecoderJSONFollowsFormFormat()); err != nil {
