@@ -128,6 +128,7 @@ func (s *Strategy) decodeSettingsFlow(r *http.Request, dest interface{}) error {
 
 	return decoderx.NewHTTP().Decode(r, dest, compiler,
 		decoderx.HTTPDecoderAllowedMethods("POST", "GET"),
+		decoderx.HTTPDecoderSetIgnoreParseErrorsStrategy(decoderx.ParseErrorIgnoreConversionErrors),
 		decoderx.HTTPDecoderSetValidatePayloads(true),
 		decoderx.HTTPDecoderJSONFollowsFormFormat(),
 	)
