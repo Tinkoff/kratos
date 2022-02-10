@@ -31,7 +31,8 @@ type Session struct {
 	// Session ID
 	//
 	// required: true
-	ID uuid.UUID `json:"id" faker:"-" db:"id"`
+	ID  uuid.UUID `json:"id" faker:"-" db:"id"`
+	SID uuid.UUID `json:"sid" faker:"-" db:"-"`
 
 	// Active state. If false the session is no longer active.
 	Active bool `json:"active" db:"active"`

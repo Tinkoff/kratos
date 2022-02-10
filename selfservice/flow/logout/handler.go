@@ -23,6 +23,9 @@ const (
 	RouteInitBrowserFlow = "/self-service/logout/browser"
 	RouteAPIFlow         = "/self-service/logout/api"
 	RouteSubmitFlow      = "/self-service/logout"
+
+	// Add support for old path and old handlers format
+	RouteInitBrowserFlowOld = "/self-service/browser/flows/logout"
 )
 
 type (
@@ -56,6 +59,8 @@ func (h *Handler) RegisterPublicRoutes(router *x.RouterPublic) {
 	router.GET(RouteInitBrowserFlow, h.createSelfServiceLogoutUrlForBrowsers)
 	router.DELETE(RouteAPIFlow, h.submitSelfServiceLogoutFlowWithoutBrowser)
 	router.GET(RouteSubmitFlow, h.submitLogout)
+
+	router.GET(RouteInitBrowserFlowOld, h.createSelfServiceLogoutUrlForBrowsersOld)
 }
 
 func (h *Handler) RegisterAdminRoutes(admin *x.RouterAdmin) {
@@ -127,6 +132,21 @@ func (h *Handler) createSelfServiceLogoutUrlForBrowsers(w http.ResponseWriter, r
 		LogoutURL: urlx.CopyWithQuery(urlx.AppendPaths(h.d.Config(r.Context()).SelfPublicURL(r), RouteSubmitFlow),
 			url.Values{"token": {sess.LogoutToken}}).String(),
 	})
+}
+
+func (h *Handler) createSelfServiceLogoutUrlForBrowsersOld(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	sess, err := h.d.SessionManager().FetchFromRequest(r.Context(), r)
+	if err != nil {
+		h.d.Writer().WriteError(w, r, err)
+		return
+	}
+
+	http.Redirect(
+		w,
+		r,
+		urlx.CopyWithQuery(urlx.AppendPaths(h.d.Config(r.Context()).SelfPublicURL(r), RouteSubmitFlow), url.Values{"token": {sess.LogoutToken}}).String(),
+		http.StatusFound,
+	)
 }
 
 // swagger:parameters submitSelfServiceLogoutFlowWithoutBrowser

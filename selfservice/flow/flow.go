@@ -18,6 +18,10 @@ func AppendFlowTo(src *url.URL, id uuid.UUID) *url.URL {
 	return urlx.CopyWithQuery(src, url.Values{"flow": {id.String()}})
 }
 
+func AppendFlowToOld(src *url.URL, id uuid.UUID) *url.URL {
+	return urlx.CopyWithQuery(src, url.Values{"request": {id.String()}})
+}
+
 func GetFlowID(r *http.Request) (uuid.UUID, error) {
 	rid := x.ParseUUID(r.URL.Query().Get("flow"))
 	if rid == uuid.Nil {

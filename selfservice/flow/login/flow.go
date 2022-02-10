@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/ory/kratos/text"
 	"github.com/tidwall/gjson"
 
 	"github.com/ory/x/sqlxx"
@@ -103,6 +104,17 @@ type Flow struct {
 	RequestedAAL identity.AuthenticatorAssuranceLevel `json:"requested_aal" faker:"len=4" db:"requested_aal"`
 }
 
+type FlowOld struct {
+	ID         uuid.UUID                                `json:"id" faker:"-" db:"id" rw:"r"`
+	ExpiresAt  time.Time                                `json:"expires_at" faker:"time_type" db:"expires_at"`
+	IssuedAt   time.Time                                `json:"issued_at" faker:"time_type" db:"issued_at"`
+	RequestURL string                                   `json:"request_url" db:"request_url"`
+	Active     identity.CredentialsType                 `json:"active,omitempty" db:"active_method"`
+	Messages   text.Messages                            `json:"messages" db:"messages" faker:"-"`
+	Methods    map[identity.CredentialsType]*FlowMethod `json:"methods" faker:"login_flow_methods" db:"-"`
+	Refresh    bool                                     `json:"forced" db:"forced"`
+}
+
 func NewFlow(conf *config.Config, exp time.Duration, csrf string, r *http.Request, flowType flow.Type) (*Flow, error) {
 	now := time.Now().UTC()
 	id := x.NewUUID()
@@ -171,6 +183,10 @@ func (f *Flow) IsForced() bool {
 
 func (f *Flow) AppendTo(src *url.URL) *url.URL {
 	return flow.AppendFlowTo(src, f.ID)
+}
+
+func (f *Flow) AppendToOld(src *url.URL) *url.URL {
+	return flow.AppendFlowToOld(src, f.ID)
 }
 
 func (f Flow) GetNID() uuid.UUID {

@@ -2,9 +2,11 @@ package session
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/gofrs/uuid"
 	"github.com/julienschmidt/httprouter"
+	"github.com/ory/x/sqlxx"
 	"github.com/pkg/errors"
 
 	"github.com/ory/x/decoderx"
@@ -174,6 +176,11 @@ func (h *Handler) whoami(w http.ResponseWriter, r *http.Request, ps httprouter.P
 
 	// s.Devices = nil
 	s.Identity = s.Identity.CopyWithoutCredentials()
+	s.SID = s.ID
+	now := sqlxx.NullTime(time.Now().Add(time.Hour))
+	for i := range s.Identity.VerifiableAddresses {
+		s.Identity.VerifiableAddresses[i].ExpiresAt = &now
+	}
 
 	// Set userId as the X-Kratos-Authenticated-Identity-Id header.
 	w.Header().Set("X-Kratos-Authenticated-Identity-Id", s.Identity.ID.String())

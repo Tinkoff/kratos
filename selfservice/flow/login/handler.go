@@ -36,6 +36,10 @@ const (
 	RouteGetFlow = "/self-service/login/flows"
 
 	RouteSubmitFlow = "/self-service/login"
+
+	// Add support for old path and old handlers format
+	RouteInitBrowserFlowOld = "/self-service/browser/flows/login"
+	RouteGetFlowOld         = "/self-service/browser/flows/requests/login"
 )
 
 type (
@@ -75,6 +79,9 @@ func (h *Handler) RegisterPublicRoutes(public *x.RouterPublic) {
 
 	public.POST(RouteSubmitFlow, h.submitFlow)
 	public.GET(RouteSubmitFlow, h.submitFlow)
+
+	public.GET(RouteInitBrowserFlowOld, h.initBrowserFlowOld)
+	public.GET(RouteGetFlowOld, h.fetchFlowOld)
 }
 
 func (h *Handler) RegisterAdminRoutes(admin *x.RouterAdmin) {
@@ -344,6 +351,28 @@ func (h *Handler) initBrowserFlow(w http.ResponseWriter, r *http.Request, ps htt
 	x.AcceptToRedirectOrJSON(w, r, h.d.Writer(), a, a.AppendTo(h.d.Config(r.Context()).SelfServiceFlowLoginUI()).String())
 }
 
+func (h *Handler) initBrowserFlowOld(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	a, err := h.NewLoginFlow(w, r, flow.TypeBrowser)
+	if errors.Is(err, ErrAlreadyLoggedIn) {
+		returnTo, redirErr := x.SecureRedirectTo(r, h.d.Config(r.Context()).SelfServiceBrowserDefaultReturnTo(),
+			x.SecureRedirectAllowSelfServiceURLs(h.d.Config(r.Context()).SelfPublicURL(r)),
+			x.SecureRedirectAllowURLs(h.d.Config(r.Context()).SelfServiceBrowserWhitelistedReturnToDomains()),
+		)
+		if redirErr != nil {
+			h.d.SelfServiceErrorManager().Forward(r.Context(), w, r, redirErr)
+			return
+		}
+
+		x.AcceptToRedirectOrJSON(w, r, h.d.Writer(), err, returnTo.String())
+		return
+	} else if err != nil {
+		h.d.SelfServiceErrorManager().Forward(r.Context(), w, r, err)
+		return
+	}
+
+	x.AcceptToRedirectOrJSON(w, r, h.d.Writer(), a, a.AppendToOld(h.d.Config(r.Context()).SelfServiceFlowLoginUI()).String())
+}
+
 // nolint:deadcode,unused
 // swagger:parameters getSelfServiceLoginFlow
 type getSelfServiceLoginFlow struct {
@@ -434,6 +463,80 @@ func (h *Handler) fetchFlow(w http.ResponseWriter, r *http.Request, _ httprouter
 	}
 
 	h.d.Writer().Write(w, r, ar)
+}
+
+func (h *Handler) fetchFlowOld(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	ar, err := h.d.LoginFlowPersister().GetLoginFlow(r.Context(), x.ParseUUID(r.URL.Query().Get("request")))
+	if err != nil {
+		h.d.Writer().WriteError(w, r, err)
+		return
+	}
+
+	// Browser flows must include the CSRF token
+	//
+	// Resolves: https://github.com/ory/kratos/issues/1282
+	if ar.Type == flow.TypeBrowser && !nosurf.VerifyToken(h.d.GenerateCSRFToken(r), ar.CSRFToken) {
+		h.d.Writer().WriteError(w, r, x.CSRFErrorReason(r, h.d))
+		return
+	}
+
+	if ar.ExpiresAt.Before(time.Now()) {
+		if ar.Type == flow.TypeBrowser {
+			h.d.Writer().WriteError(w, r, errors.WithStack(x.ErrGone.WithID(text.ErrIDSelfServiceFlowExpired).
+				WithReason("The login flow has expired. Redirect the user to the login flow init endpoint to initialize a new login flow.").
+				WithDetail("redirect_to", urlx.AppendPaths(h.d.Config(r.Context()).SelfPublicURL(r), RouteInitBrowserFlow).String())))
+			return
+		}
+		h.d.Writer().WriteError(w, r, errors.WithStack(x.ErrGone.WithID(text.ErrIDSelfServiceFlowExpired).
+			WithReason("The login flow has expired. Call the login flow init API endpoint to initialize a new login flow.").
+			WithDetail("api", urlx.AppendPaths(h.d.Config(r.Context()).SelfPublicURL(r), RouteInitAPIFlow).String())))
+		return
+	}
+
+	flowMethods := make(FlowMethods, 0)
+	for _, n := range ar.UI.Nodes {
+		if _, ok := flowMethods[identity.CredentialsType(n.Group)]; !ok {
+			flowMethods[identity.CredentialsType(n.Group)] = &FlowMethod{
+				Method: identity.CredentialsType(n.Group),
+				Config: &FlowMethodConfig{
+					Action:   ar.UI.Action,
+					Method:   ar.UI.Method,
+					Messages: ar.UI.Messages,
+				},
+			}
+		}
+		if inputAttrs, ok := n.Attributes.(*node.InputAttributes); ok {
+			flowMethods[identity.CredentialsType(n.Group)].Config.Fields = append(flowMethods[identity.CredentialsType(n.Group)].Config.Fields, Field{
+				Name:     inputAttrs.Name,
+				Type:     string(inputAttrs.Type),
+				Pattern:  inputAttrs.Pattern,
+				Disabled: inputAttrs.Disabled,
+				Required: inputAttrs.Required,
+				Value:    inputAttrs.GetValue(),
+				Messages: n.Messages,
+			})
+		}
+	}
+
+	if defaultMethod, ok := flowMethods[identity.CredentialsType(node.DefaultGroup)]; ok {
+		for _, flowMethod := range flowMethods {
+			flowMethod.Config.Fields = append(flowMethod.Config.Fields, defaultMethod.Config.Fields...)
+		}
+		delete(flowMethods, identity.CredentialsType(node.DefaultGroup))
+	}
+
+	oldForm := FlowOld{
+		ID:         ar.ID,
+		ExpiresAt:  ar.ExpiresAt,
+		IssuedAt:   ar.IssuedAt,
+		RequestURL: ar.RequestURL,
+		Active:     ar.Active,
+		Messages:   ar.UI.Messages,
+		Methods:    flowMethods,
+		Refresh:    ar.Refresh,
+	}
+
+	h.d.Writer().Write(w, r, oldForm)
 }
 
 // nolint:deadcode,unused
