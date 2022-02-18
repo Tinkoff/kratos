@@ -78,7 +78,7 @@ func (s *Strategy) PopulateLoginMethod(r *http.Request, requestedAAL identity.Au
 	}
 
 	sr.UI.SetCSRF(s.d.GenerateCSRFToken(r))
-	sr.UI.Nodes.Upsert(NewWebAuthnScript(urlx.AppendPaths(s.d.Config(r.Context()).SelfPublicURL(r), webAuthnRoute).String(), jsOnLoad))
+	sr.UI.Nodes.Upsert(NewWebAuthnScript(urlx.AppendPaths(s.d.Config(r.Context()).SelfPublicURL(), webAuthnRoute).String(), jsOnLoad))
 	sr.UI.SetNode(NewWebAuthnLoginTrigger(string(injectWebAuthnOptions)))
 	sr.UI.Nodes.Upsert(NewWebAuthnLoginInput())
 
@@ -125,6 +125,7 @@ func (s *Strategy) Login(w http.ResponseWriter, r *http.Request, f *login.Flow, 
 
 	var p submitSelfServiceLoginFlowWithWebAuthnMethodBody
 	if err := s.hd.Decode(r, &p,
+		decoderx.HTTPDecoderSetIgnoreParseErrorsStrategy(decoderx.ParseErrorIgnoreConversionErrors),
 		decoderx.HTTPDecoderSetValidatePayloads(true),
 		decoderx.MustHTTPRawJSONSchemaCompiler(loginSchema),
 		decoderx.HTTPDecoderJSONFollowsFormFormat()); err != nil {

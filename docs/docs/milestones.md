@@ -81,9 +81,6 @@ New feature or request.
       ([kratos#707](https://github.com/ory/kratos/issues/707))
 - [ ] improve multi schema handling in different auth flows
       ([kratos#765](https://github.com/ory/kratos/issues/765))
-- [ ] Add option for disabling registration
-      ([kratos#882](https://github.com/ory/kratos/issues/882)) -
-      [@hackerman](https://github.com/aeneasr)
 - [ ] Password policies: make api.pwnedpasswords.com configurable
       ([kratos#969](https://github.com/ory/kratos/issues/969))
 - [ ] Access identity schema information (e.g. usernames) within the jsonnet
@@ -110,6 +107,9 @@ New feature or request.
       [@Alano Terblanche](https://github.com/Benehiko)
 - [x] Add i18n support to mail templates
       ([kratos#834](https://github.com/ory/kratos/issues/834))
+- [x] Add option for disabling registration
+      ([kratos#882](https://github.com/ory/kratos/issues/882)) -
+      [@hackerman](https://github.com/aeneasr)
 - [x] login ui returned without flowid
       ([kratos#1055](https://github.com/ory/kratos/issues/1055))
 - [x] Allow account recovery for identities without email address
@@ -122,18 +122,6 @@ New feature or request.
       ([kratos#1699](https://github.com/ory/kratos/issues/1699))
 - [x] Email Courier SMTP Header Configuration
       ([kratos#1725](https://github.com/ory/kratos/issues/1725))
-
-### [Docs](https://github.com/ory/kratos/labels/docs)
-
-Affects documentation.
-
-#### Issues
-
-- [ ] Config JSON Schema needs example values
-      ([kratos#179](https://github.com/ory/kratos/issues/179)) -
-      [@hackerman](https://github.com/aeneasr)
-- [x] Tag version in docker-compose before commit&tag push
-      ([kratos#1738](https://github.com/ory/kratos/issues/1738))
 
 ### [Rfc](https://github.com/ory/kratos/labels/rfc)
 
@@ -162,15 +150,6 @@ Blocks milestones or other issues or pulls.
 - [ ] Implement Hydra integration
       ([kratos#273](https://github.com/ory/kratos/issues/273))
 
-### [Ci](https://github.com/ory/kratos/labels/ci)
-
-Affects Continuous Integration (CI).
-
-#### Issues
-
-- [x] Tag version in docker-compose before commit&tag push
-      ([kratos#1738](https://github.com/ory/kratos/issues/1738))
-
 ## [v0.10.0-alpha.1](https://github.com/ory/kratos/milestone/13)
 
 _This milestone does not have a description._
@@ -198,19 +177,6 @@ New feature or request.
       ([kratos#596](https://github.com/ory/kratos/issues/596))
 - [ ] Add ability to import user credentials
       ([kratos#605](https://github.com/ory/kratos/issues/605)) -
-      [@hackerman](https://github.com/aeneasr)
-
-### [Docs](https://github.com/ory/kratos/labels/docs)
-
-Affects documentation.
-
-#### Issues
-
-- [ ] WebAuth docs are missing
-      ([kratos#1951](https://github.com/ory/kratos/issues/1951)) -
-      [@hackerman](https://github.com/aeneasr)
-- [ ] Add missing cloud docs
-      ([kratos#1952](https://github.com/ory/kratos/issues/1952)) -
       [@hackerman](https://github.com/aeneasr)
 
 ## [v0.7.x](https://github.com/ory/kratos/milestone/12)
@@ -243,18 +209,6 @@ Something is not working.
 - [x] fix(sdk): use proper annotation for genericError
       ([kratos#1611](https://github.com/ory/kratos/pull/1611)) -
       [@hackerman](https://github.com/aeneasr)
-
-### [Docs](https://github.com/ory/kratos/labels/docs)
-
-Affects documentation.
-
-#### Issues
-
-- [x] Update CSRF pitfall section for admin endpoints
-      ([kratos#1557](https://github.com/ory/kratos/issues/1557)) -
-      [@hackerman](https://github.com/aeneasr)
-- [x] Different payload for stub:500
-      ([kratos#1568](https://github.com/ory/kratos/issues/1568))
 
 ## [v0.9.0-alpha.1](https://github.com/ory/kratos/milestone/11)
 
@@ -292,9 +246,6 @@ New feature or request.
 - [ ] Prevent account enumeration for profile updates
       ([kratos#292](https://github.com/ory/kratos/issues/292)) -
       [@hackerman](https://github.com/aeneasr)
-- [ ] Admin/Selfservice session management
-      ([kratos#655](https://github.com/ory/kratos/issues/655)) -
-      [@Patrik](https://github.com/zepatrik)
 - [ ] Replace magic links with TOTP OOB codes
       ([kratos#1451](https://github.com/ory/kratos/issues/1451))
 - [ ] Delete self-service flows after completion
@@ -306,23 +257,9 @@ New feature or request.
 - [ ] Update config key neames
       ([kratos#1979](https://github.com/ory/kratos/issues/1979)) -
       [@hackerman](https://github.com/aeneasr)
-
-### [Docs](https://github.com/ory/kratos/labels/docs)
-
-Affects documentation.
-
-#### Issues
-
-- [ ] Documentation refactoring
-      ([kratos#1904](https://github.com/ory/kratos/issues/1904)) -
-      [@hackerman](https://github.com/aeneasr)
-- [x] Document that identity information (traits, etc) are available to token
-      holders and backend systems
-      ([kratos#43](https://github.com/ory/kratos/issues/43)) -
-      [@hackerman](https://github.com/aeneasr)
-- [x] doc page for ui error messages
-      ([kratos#1784](https://github.com/ory/kratos/issues/1784)) -
-      [@hackerman](https://github.com/aeneasr)
+- [x] Admin/Selfservice session management
+      ([kratos#655](https://github.com/ory/kratos/issues/655)) -
+      [@Patrik](https://github.com/zepatrik)
 
 ## [v0.8.0-alpha.1](https://github.com/ory/kratos/milestone/10)
 
@@ -334,12 +271,8 @@ Something is not working.
 
 #### Issues
 
-- [ ] Resumable session is not cleared up on error
-      ([kratos#2016](https://github.com/ory/kratos/issues/2016)) -
-      [@hackerman](https://github.com/aeneasr)
 - [ ] Recovery link answers with JSON payload for API flows
-      ([kratos#2049](https://github.com/ory/kratos/issues/2049)) -
-      [@hackerman](https://github.com/aeneasr)
+      ([kratos#2049](https://github.com/ory/kratos/issues/2049))
 - [x] Unmable to use Auth0 as a generic OIDC provider
       ([kratos#609](https://github.com/ory/kratos/issues/609))
 - [x] Typescript ErrorContainer type is incorrect
@@ -352,6 +285,9 @@ Something is not working.
       [@hackerman](https://github.com/aeneasr)
 - [x] Hide SQLite migration message
       ([kratos#1791](https://github.com/ory/kratos/issues/1791)) -
+      [@hackerman](https://github.com/aeneasr)
+- [x] Resumable session is not cleared up on error
+      ([kratos#2016](https://github.com/ory/kratos/issues/2016)) -
       [@hackerman](https://github.com/aeneasr)
 
 ### [Feat](https://github.com/ory/kratos/labels/feat)
@@ -382,22 +318,6 @@ New feature or request.
 - [x] fix: slow CLI start up time
       ([kratos#1878](https://github.com/ory/kratos/pull/1878))
 
-### [Docs](https://github.com/ory/kratos/labels/docs)
-
-Affects documentation.
-
-#### Issues
-
-- [x] Include release notes in CHANGELOG.md
-      ([kratos#1442](https://github.com/ory/kratos/issues/1442)) -
-      [@hackerman](https://github.com/aeneasr)
-- [x] Include changelog in docs navigation
-      ([kratos#1443](https://github.com/ory/kratos/issues/1443)) -
-      [@hackerman](https://github.com/aeneasr)
-- [x] Config reference has not been updated since 0.5.0
-      ([kratos#1597](https://github.com/ory/kratos/issues/1597)) -
-      [@hackerman](https://github.com/aeneasr)
-
 ### [Blocking](https://github.com/ory/kratos/labels/blocking)
 
 Blocks milestones or other issues or pulls.
@@ -416,4 +336,240 @@ Blocks milestones or other issues or pulls.
 - [x] feat: ReactJS, better SPA APIs, 2FA with WebAuthn & TOTP & Lookup Secrets,
       better errors, typescript e2e tests
       ([kratos#1624](https://github.com/ory/kratos/pull/1624)) -
+      [@hackerman](https://github.com/aeneasr)
+
+## [v0.7.0-alpha.1](https://github.com/ory/kratos/milestone/9)
+
+_This milestone does not have a description._
+
+### [Bug](https://github.com/ory/kratos/labels/bug)
+
+Something is not working.
+
+#### Issues
+
+- [x] Do not create system errors on duplicate credentials when linking oidc
+      providers ([kratos#694](https://github.com/ory/kratos/issues/694))
+- [x] Investigate why smtps fails but smtp does not
+      ([kratos#781](https://github.com/ory/kratos/issues/781)) -
+      [@hackerman](https://github.com/aeneasr)
+- [x] Reloading config values does not work
+      ([kratos#804](https://github.com/ory/kratos/issues/804)) -
+      [@hackerman](https://github.com/aeneasr)
+- [x] handle 409 error in settings flow
+      ([kratos#1107](https://github.com/ory/kratos/issues/1107))
+- [x] Account Recovery API flow requires CSRF cookie
+      ([kratos#1141](https://github.com/ory/kratos/issues/1141)) -
+      [@hackerman](https://github.com/aeneasr)
+- [x] Receive the verification email every time when I update my password
+      ([kratos#1221](https://github.com/ory/kratos/issues/1221))
+- [x] No email validation for /verify and /recovery page. email queue is
+      backlogged with invalid emails.
+      ([kratos#1285](https://github.com/ory/kratos/issues/1285))
+- [x] Verification submission endpoint (submitSelfServiceVerificationFlow) still
+      requires CSRF cookie for API flows
+      ([kratos#1368](https://github.com/ory/kratos/issues/1368)) -
+      [@hackerman](https://github.com/aeneasr)
+- [x] Social sign uop should reduce confusion on sign up button
+      ([kratos#1422](https://github.com/ory/kratos/issues/1422)) -
+      [@hackerman](https://github.com/aeneasr)
+- [x] Update profile with field error returning 502
+      ([kratos#1425](https://github.com/ory/kratos/issues/1425)) -
+      [@hackerman](https://github.com/aeneasr)
+- [x] fix: settings flow error handle should access schemas using configured
+      "local" URLs instead of public URLs
+      ([kratos#1448](https://github.com/ory/kratos/issues/1448))
+- [x] Verification does not include success message
+      ([kratos#1450](https://github.com/ory/kratos/issues/1450)) -
+      [@hackerman](https://github.com/aeneasr)
+
+#### Pull Requests
+
+- [x] fix: continue button for oidc registration step
+      ([kratos#1427](https://github.com/ory/kratos/pull/1427)) -
+      [@hackerman](https://github.com/aeneasr)
+- [x] fix: deprecate sessionCookie
+      ([kratos#1428](https://github.com/ory/kratos/pull/1428)) -
+      [@hackerman](https://github.com/aeneasr)
+- [x] fix: use STARTTLS for smtps connections
+      ([kratos#1430](https://github.com/ory/kratos/pull/1430)) -
+      [@hackerman](https://github.com/aeneasr)
+- [x] fix: incorrect openapi specification for verification submission
+      ([kratos#1431](https://github.com/ory/kratos/pull/1431)) -
+      [@hackerman](https://github.com/aeneasr)
+
+### [Feat](https://github.com/ory/kratos/labels/feat)
+
+New feature or request.
+
+#### Issues
+
+- [x] Gracefully handle CSRF errors
+      ([kratos#91](https://github.com/ory/kratos/issues/91)) -
+      [@hackerman](https://github.com/aeneasr)
+- [x] Feature Request: Webhooks
+      ([kratos#271](https://github.com/ory/kratos/issues/271))
+- [x] Implement Security Questions MFA
+      ([kratos#469](https://github.com/ory/kratos/issues/469))
+- [x] Implement React SPA sample app
+      ([kratos#668](https://github.com/ory/kratos/issues/668)) -
+      [@hackerman](https://github.com/aeneasr)
+- [x] Double slash in URLs causes CSRF issues
+      ([kratos#779](https://github.com/ory/kratos/issues/779))
+- [x] CSRF failure should start a new login/registration flow
+      ([kratos#821](https://github.com/ory/kratos/issues/821)) -
+      [@hackerman](https://github.com/aeneasr)
+- [x] Prevent accidental leak of PII when Copy & Pasting of Flow URLs which
+      include Flow IDs
+      ([kratos#1282](https://github.com/ory/kratos/issues/1282)) -
+      [@hackerman](https://github.com/aeneasr)
+- [x] Write tests for domain aliasing in cookie handler
+      ([kratos#1292](https://github.com/ory/kratos/issues/1292)) -
+      [@hackerman](https://github.com/aeneasr)
+- [x] Document new CSRF Cookie requirement
+      ([kratos#1472](https://github.com/ory/kratos/issues/1472)) -
+      [@hackerman](https://github.com/aeneasr)
+
+#### Pull Requests
+
+- [x] feat: APIs for native integration with AJAX / SPAs / ReactJS / NextJS /
+      ... ([kratos#1367](https://github.com/ory/kratos/pull/1367)) -
+      [@hackerman](https://github.com/aeneasr)
+- [x] feat: anti-CSRF measures when fetching flows
+      ([kratos#1458](https://github.com/ory/kratos/pull/1458)) -
+      [@hackerman](https://github.com/aeneasr)
+
+### [Rfc](https://github.com/ory/kratos/labels/rfc)
+
+A request for comments to discuss and share ideas.
+
+#### Issues
+
+- [x] Prevent accidental leak of PII when Copy & Pasting of Flow URLs which
+      include Flow IDs
+      ([kratos#1282](https://github.com/ory/kratos/issues/1282)) -
+      [@hackerman](https://github.com/aeneasr)
+- [x] Separate OpenAPI tags into stable and experimental and rework admin
+      strategy ([kratos#1424](https://github.com/ory/kratos/issues/1424)) -
+      [@hackerman](https://github.com/aeneasr)
+
+### [Blocking](https://github.com/ory/kratos/labels/blocking)
+
+Blocks milestones or other issues or pulls.
+
+#### Issues
+
+- [x] Document new CSRF Cookie requirement
+      ([kratos#1472](https://github.com/ory/kratos/issues/1472)) -
+      [@hackerman](https://github.com/aeneasr)
+
+#### Pull Requests
+
+- [x] feat: APIs for native integration with AJAX / SPAs / ReactJS / NextJS /
+      ... ([kratos#1367](https://github.com/ory/kratos/pull/1367)) -
+      [@hackerman](https://github.com/aeneasr)
+
+## [v0.6.0-alpha.1](https://github.com/ory/kratos/milestone/8)
+
+_This milestone does not have a description._
+
+### [Bug](https://github.com/ory/kratos/labels/bug)
+
+Something is not working.
+
+#### Issues
+
+- [x] Sending JSON to complete oidc/password strategy flows causes CSRF issues
+      ([kratos#378](https://github.com/ory/kratos/issues/378))
+- [x] Password reset emails sent twice by each of the two kratos pods in my
+      cluster ([kratos#652](https://github.com/ory/kratos/issues/652))
+- [x] Building From Source fails
+      ([kratos#711](https://github.com/ory/kratos/issues/711))
+- [x] Quickstart is failing to mount volume kratos.yml when SELinux is enabled
+      using Podman ([kratos#831](https://github.com/ory/kratos/issues/831)) -
+      [@hackerman](https://github.com/aeneasr)
+- [x] Add randomized constant time to every login request
+      ([kratos#832](https://github.com/ory/kratos/issues/832))
+- [x] Kratos Admin API return 409 when createIdentity is called simultaneously
+      ([kratos#861](https://github.com/ory/kratos/issues/861)) -
+      [@Patrik](https://github.com/zepatrik)
+- [x] `make sdk` is broken
+      ([kratos#950](https://github.com/ory/kratos/issues/950)) -
+      [@hackerman](https://github.com/aeneasr)
+- [x] CLI navigation reference is broken
+      ([kratos#951](https://github.com/ory/kratos/issues/951))
+
+#### Pull Requests
+
+- [x] Implement FIDO2/MFA and refactor flow payloads and identity credentials
+      and authenticators
+      ([kratos#921](https://github.com/ory/kratos/pull/921)) -
+      [@hackerman](https://github.com/aeneasr)
+- [x] Umbrella PR for Ory Kratos v0.6 with MFA and improved flows (#961)
+      ([kratos#1012](https://github.com/ory/kratos/pull/1012)) -
+      [@hackerman](https://github.com/aeneasr)
+
+### [Feat](https://github.com/ory/kratos/labels/feat)
+
+New feature or request.
+
+#### Issues
+
+- [x] Support remote argon2 execution
+      ([kratos#357](https://github.com/ory/kratos/issues/357)) -
+      [@hackerman](https://github.com/aeneasr)
+- [x] Feature request: adjustable thresholds on how many times a password has
+      been in a breach according to haveibeenpwned
+      ([kratos#450](https://github.com/ory/kratos/issues/450))
+- [x] Add return_to after logout
+      ([kratos#702](https://github.com/ory/kratos/issues/702)) -
+      [@Patrik](https://github.com/zepatrik)
+- [x] Write CLI helper for recommending Argon2 parameters
+      ([kratos#723](https://github.com/ory/kratos/issues/723)) -
+      [@Patrik](https://github.com/zepatrik)
+- [x] Add possibility to configure the "claims" query parameter in the auth_url
+      of OIDC providers to request individial id_token claims
+      ([kratos#735](https://github.com/ory/kratos/issues/735))
+- [x] Replace viper with Koanf
+      ([kratos#894](https://github.com/ory/kratos/issues/894)) -
+      [@hackerman](https://github.com/aeneasr)
+- [x] Support dynamic return_to address on verification flow
+      ([kratos#1123](https://github.com/ory/kratos/issues/1123))
+
+#### Pull Requests
+
+- [x] docs: Initial set of documentation tests
+      ([kratos#567](https://github.com/ory/kratos/pull/567)) -
+      [@hackerman](https://github.com/aeneasr)
+- [x] feat: add selinux compatible quickstart config
+      ([kratos#889](https://github.com/ory/kratos/pull/889)) -
+      [@hackerman](https://github.com/aeneasr)
+- [x] Umbrella PR for Ory Kratos v0.6 with MFA and improved flows (#961)
+      ([kratos#1012](https://github.com/ory/kratos/pull/1012)) -
+      [@hackerman](https://github.com/aeneasr)
+
+### [Rfc](https://github.com/ory/kratos/labels/rfc)
+
+A request for comments to discuss and share ideas.
+
+#### Issues
+
+- [x] Refactor form builder
+      ([kratos#929](https://github.com/ory/kratos/issues/929)) -
+      [@hackerman](https://github.com/aeneasr)
+
+### [Blocking](https://github.com/ory/kratos/labels/blocking)
+
+Blocks milestones or other issues or pulls.
+
+#### Issues
+
+- [x] Ory Kratos v0.6 pre-release list
+      ([kratos#1222](https://github.com/ory/kratos/issues/1222)) -
+      [@hackerman](https://github.com/aeneasr)
+
+#### Pull Requests
+
+- [x] Umbrella PR for Ory Kratos v0.6 with MFA and improved flows (#961)
+      ([kratos#1012](https://github.com/ory/kratos/pull/1012)) -
       [@hackerman](https://github.com/aeneasr)

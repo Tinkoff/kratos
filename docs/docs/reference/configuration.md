@@ -147,6 +147,23 @@ selfservice:
     ## registration ##
     #
     registration:
+      ## Registration UI URL ##
+      #
+      # URL where the Registration UI is hosted. Check the [reference implementation](https://github.com/ory/kratos-selfservice-ui-node).
+      #
+      # Default value: https://www.ory.sh/kratos/docs/fallback/registration
+      #
+      # Examples:
+      # - https://my-app.com/signup
+      #
+      # Set this value using environment variables on
+      # - Linux/macOS:
+      #    $ export SELFSERVICE_FLOWS_REGISTRATION_UI_URL=<value>
+      # - Windows Command Line (CMD):
+      #    > set SELFSERVICE_FLOWS_REGISTRATION_UI_URL=<value>
+      #
+      ui_url: https://my-app.com/signup
+
       ## lifespan ##
       #
       # Default value: 1h
@@ -288,22 +305,19 @@ selfservice:
         #
         default_browser_return_url: https://my-app.com/dashboard
 
-      ## Registration UI URL ##
+      ## Enable User Registration ##
       #
-      # URL where the Registration UI is hosted. Check the [reference implementation](https://github.com/ory/kratos-selfservice-ui-node).
+      # If set to true will enable [User Registration](https://www.ory.sh/kratos/docs/self-service/flows/user-registration/).
       #
-      # Default value: https://www.ory.sh/kratos/docs/fallback/registration
-      #
-      # Examples:
-      # - https://my-app.com/signup
+      # Default value: true
       #
       # Set this value using environment variables on
       # - Linux/macOS:
-      #    $ export SELFSERVICE_FLOWS_REGISTRATION_UI_URL=<value>
+      #    $ export SELFSERVICE_FLOWS_REGISTRATION_ENABLED=<value>
       # - Windows Command Line (CMD):
-      #    > set SELFSERVICE_FLOWS_REGISTRATION_UI_URL=<value>
+      #    > set SELFSERVICE_FLOWS_REGISTRATION_ENABLED=<value>
       #
-      ui_url: https://my-app.com/signup
+      enabled: false
 
     ## login ##
     #
@@ -892,6 +906,19 @@ selfservice:
         #
         lifespan: 1h
 
+        ## Override the base URL which should be used as the base for recovery and verification links. ##
+        #
+        # Examples:
+        # - https://my-app.com
+        #
+        # Set this value using environment variables on
+        # - Linux/macOS:
+        #    $ export SELFSERVICE_METHODS_LINK_CONFIG_BASE_URL=<value>
+        # - Windows Command Line (CMD):
+        #    > set SELFSERVICE_METHODS_LINK_CONFIG_BASE_URL=<value>
+        #
+        base_url: https://my-app.com
+
       ## Enables Link Method ##
       #
       # Default value: true
@@ -955,6 +982,36 @@ selfservice:
         #    > set SELFSERVICE_METHODS_PASSWORD_CONFIG_IGNORE_NETWORK_ERRORS=<value>
         #
         ignore_network_errors: false
+
+        ## Minimum Password Length ##
+        #
+        # Defines the minimum length of the password.
+        #
+        # Default value: 8
+        #
+        # Minimum value: 6
+        #
+        # Set this value using environment variables on
+        # - Linux/macOS:
+        #    $ export SELFSERVICE_METHODS_PASSWORD_CONFIG_MIN_PASSWORD_LENGTH=<value>
+        # - Windows Command Line (CMD):
+        #    > set SELFSERVICE_METHODS_PASSWORD_CONFIG_MIN_PASSWORD_LENGTH=<value>
+        #
+        min_password_length: 6
+
+        ## Enable password-identifier similarity check ##
+        #
+        # If set to false the password validation does not check for similarity between the password and the user identifier.
+        #
+        # Default value: true
+        #
+        # Set this value using environment variables on
+        # - Linux/macOS:
+        #    $ export SELFSERVICE_METHODS_PASSWORD_CONFIG_IDENTIFIER_SIMILARITY_CHECK_ENABLED=<value>
+        # - Windows Command Line (CMD):
+        #    > set SELFSERVICE_METHODS_PASSWORD_CONFIG_IDENTIFIER_SIMILARITY_CHECK_ENABLED=<value>
+        #
+        identifier_similarity_check_enabled: false
 
         ## Custom haveibeenpwned host ##
         #
@@ -1366,21 +1423,6 @@ serve:
     #    > set SERVE_PUBLIC_BASE_URL=<value>
     #
     base_url: https://my-app.com/
-
-    ## Domain Aliases ##
-    #
-    # Adds an alias domain. If a request with the hostname (FQDN) matching the hostname in the alias is found, that URL is used as the base URL.
-    #
-    # Set this value using environment variables on
-    # - Linux/macOS:
-    #    $ export SERVE_PUBLIC_DOMAIN_ALIASES=<value>
-    # - Windows Command Line (CMD):
-    #    > set SERVE_PUBLIC_DOMAIN_ALIASES=<value>
-    #
-    domain_aliases:
-      - match_domain: localhost
-        base_path: /
-        scheme: http
 
     ## Public Host ##
     #
@@ -2373,6 +2415,30 @@ expose-metrics-port: 4434
 #
 config:
   - ''
+
+## Global outgoing network settings ##
+#
+# Configure how outgoing network calls behave.
+#
+clients:
+  ## Global HTTP client configuration ##
+  #
+  # Configure how outgoing HTTP calls behave.
+  #
+  http:
+    ## Disallow private IP ranges ##
+    #
+    # Disallow all outgoing HTTP calls to private IP ranges. This feature can help protect against SSRF attacks.
+    #
+    # Default value: false
+    #
+    # Set this value using environment variables on
+    # - Linux/macOS:
+    #    $ export CLIENTS_HTTP_DISALLOW_PRIVATE_IP_RANGES=<value>
+    # - Windows Command Line (CMD):
+    #    > set CLIENTS_HTTP_DISALLOW_PRIVATE_IP_RANGES=<value>
+    #
+    disallow_private_ip_ranges: false
 
 ## Courier configuration ##
 #

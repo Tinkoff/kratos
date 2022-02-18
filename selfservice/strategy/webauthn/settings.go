@@ -128,6 +128,7 @@ func (s *Strategy) decodeSettingsFlow(r *http.Request, dest interface{}) error {
 
 	return decoderx.NewHTTP().Decode(r, dest, compiler,
 		decoderx.HTTPDecoderAllowedMethods("POST", "GET"),
+		decoderx.HTTPDecoderSetIgnoreParseErrorsStrategy(decoderx.ParseErrorIgnoreConversionErrors),
 		decoderx.HTTPDecoderSetValidatePayloads(true),
 		decoderx.HTTPDecoderJSONFollowsFormFormat(),
 	)
@@ -328,7 +329,7 @@ func (s *Strategy) PopulateSettingsMethod(r *http.Request, id *identity.Identity
 		return errors.WithStack(err)
 	}
 
-	f.UI.Nodes.Upsert(NewWebAuthnScript(urlx.AppendPaths(s.d.Config(r.Context()).SelfPublicURL(r), webAuthnRoute).String(), jsOnLoad))
+	f.UI.Nodes.Upsert(NewWebAuthnScript(urlx.AppendPaths(s.d.Config(r.Context()).SelfPublicURL(), webAuthnRoute).String(), jsOnLoad))
 	f.UI.Nodes.Upsert(NewWebAuthnConnectionName())
 	f.UI.Nodes.Upsert(NewWebAuthnConnectionTrigger(string(injectWebAuthnOptions)))
 	f.UI.Nodes.Upsert(NewWebAuthnConnectionInput())

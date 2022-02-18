@@ -80,8 +80,9 @@ func (s *Strategy) decode(p *SubmitSelfServiceRegistrationFlowWithPasswordMethod
 		return errors.WithStack(err)
 	}
 
-	return s.hd.Decode(r, p, compiler, decoderx.HTTPDecoderSetValidatePayloads(true),
+	return s.hd.Decode(r, p, compiler,
 		decoderx.HTTPDecoderSetIgnoreParseErrorsStrategy(decoderx.ParseErrorIgnoreConversionErrors),
+		decoderx.HTTPDecoderSetValidatePayloads(true),
 		decoderx.HTTPDecoderJSONFollowsFormFormat())
 }
 

@@ -7,6 +7,10 @@ import (
 	"sync"
 	"time"
 
+	"github.com/hashicorp/go-retryablehttp"
+
+	"github.com/ory/x/httpx"
+
 	"github.com/gobuffalo/pop/v6"
 
 	"github.com/ory/nosurf"
@@ -423,7 +427,7 @@ func (m *RegistryDefault) SelfServiceErrorHandler() *errorx.Handler {
 	return m.errorHandler
 }
 
-func (m *RegistryDefault) CookieManager(ctx context.Context) sessions.Store {
+func (m *RegistryDefault) CookieManager(ctx context.Context) sessions.StoreExact {
 	cs := sessions.NewCookieStore(m.Config(ctx).SecretsSession()...)
 	cs.Options.Secure = !m.Config(ctx).IsInsecureDevMode()
 	cs.Options.HttpOnly = true
@@ -447,7 +451,7 @@ func (m *RegistryDefault) CookieManager(ctx context.Context) sessions.Store {
 	return cs
 }
 
-func (m *RegistryDefault) ContinuityCookieManager(ctx context.Context) sessions.Store {
+func (m *RegistryDefault) ContinuityCookieManager(ctx context.Context) sessions.StoreExact {
 	// To support hot reloading, this can not be instantiated only once.
 	cs := sessions.NewCookieStore(m.Config(ctx).SecretsSession()...)
 	cs.Options.Secure = !m.Config(ctx).IsInsecureDevMode()
@@ -678,4 +682,17 @@ func (m *RegistryDefault) PrometheusManager() *prometheus.MetricsManager {
 		m.pmm = prometheus.NewMetricsManagerWithPrefix("kratos", prometheus.HTTPMetrics, m.buildVersion, m.buildHash, m.buildDate)
 	}
 	return m.pmm
+}
+
+func (m *RegistryDefault) HTTPClient(ctx context.Context) *retryablehttp.Client {
+	opts := []httpx.ResilientOptions{
+		httpx.ResilientClientWithLogger(m.Logger()),
+		httpx.ResilientClientWithMaxRetry(2),
+		httpx.ResilientClientWithConnectionTimeout(30 * time.Second),
+	}
+	if m.Config(ctx).ClientHTTPNoPrivateIPRanges() {
+		opts = append(opts, httpx.ResilientClientDisallowInternalIPs())
+
+	}
+	return httpx.NewResilientClient(opts...)
 }
