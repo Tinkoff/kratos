@@ -150,6 +150,7 @@ const (
 	ViperKeyWebAuthnRPID                                     = "selfservice.methods.webauthn.config.rp.id"
 	ViperKeyWebAuthnRPOrigin                                 = "selfservice.methods.webauthn.config.rp.origin"
 	ViperKeyWebAuthnRPIcon                                   = "selfservice.methods.webauthn.config.rp.issuer"
+	ViperKeyDatabaseCleanupLimit                             = "database.cleanup.limit"
 	ViperKeyVersion                                          = "version"
 
 	ViperKeyContinuityName = "continuity.name"
@@ -906,6 +907,10 @@ func (p *Config) IsBackgroundCourierEnabled() bool {
 	return p.Source().Bool("watch-courier")
 }
 
+func (p *Config) IsBackgroundCleanupEnabled() bool {
+	return p.Source().Bool("background-cleanup")
+}
+
 func (p *Config) CourierExposeMetricsPort() int {
 	return p.Source().Int("expose-metrics-port")
 }
@@ -1057,6 +1062,10 @@ func (p *Config) WebAuthnConfig() *webauthn.Config {
 			UserVerification: protocol.VerificationDiscouraged,
 		},
 	}
+}
+
+func (p *Config) DatabaseCleanupLimit() int {
+	return p.p.IntF(ViperKeyDatabaseCleanupLimit, 5)
 }
 
 func (p *Config) HasherPasswordHashingAlgorithm() string {
