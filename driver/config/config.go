@@ -150,6 +150,7 @@ const (
 	ViperKeyWebAuthnRPID                                     = "selfservice.methods.webauthn.config.rp.id"
 	ViperKeyWebAuthnRPOrigin                                 = "selfservice.methods.webauthn.config.rp.origin"
 	ViperKeyWebAuthnRPIcon                                   = "selfservice.methods.webauthn.config.rp.issuer"
+	ViperKeyDatabaseCleanupKeepExpiresDuration               = "database.cleanup.keep_expires_duration"
 	ViperKeyDatabaseCleanupLimit                             = "database.cleanup.limit"
 	ViperKeyVersion                                          = "version"
 
@@ -1062,6 +1063,10 @@ func (p *Config) WebAuthnConfig() *webauthn.Config {
 			UserVerification: protocol.VerificationDiscouraged,
 		},
 	}
+}
+
+func (p *Config) DatabaseCleanupKeepExpiresDuration() time.Duration {
+	return p.p.DurationF(ViperKeyDatabaseCleanupKeepExpiresDuration, 24*90*time.Hour) // ~3 month
 }
 
 func (p *Config) DatabaseCleanupLimit() int {

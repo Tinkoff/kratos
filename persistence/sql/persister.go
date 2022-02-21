@@ -128,42 +128,48 @@ func (p *Persister) Ping() error {
 }
 
 func (p *Persister) CleanupDatabase(ctx context.Context) error {
-	currentTime := time.Now()
+	keepExpiresDuration := p.r.Config(ctx).DatabaseCleanupKeepExpiresDuration()
+	if keepExpiresDuration < 0 {
+		keepExpiresDuration = -keepExpiresDuration
+	}
+
+	expiresTime := time.Now().Add(-keepExpiresDuration)
 	deleteLimit := p.r.Config(ctx).DatabaseCleanupLimit()
-	p.r.Logger().Printf("Cleaning up first %d records older than %s\n", deleteLimit, currentTime)
+
+	p.r.Logger().Printf("Cleaning up first %d records older than %s\n", deleteLimit, expiresTime)
 
 	p.r.Logger().Println("Cleaning up expired sessions")
-	if err := p.DeleteExpiredSessions(ctx, currentTime, deleteLimit); err != nil {
+	if err := p.DeleteExpiredSessions(ctx, expiresTime, deleteLimit); err != nil {
 		return err
 	}
 
 	p.r.Logger().Println("Cleaning up expired continuity containers")
-	if err := p.DeleteExpiredContinuitySessions(ctx, currentTime, deleteLimit); err != nil {
+	if err := p.DeleteExpiredContinuitySessions(ctx, expiresTime, deleteLimit); err != nil {
 		return err
 	}
 
 	p.r.Logger().Println("Cleaning up expired login flows")
-	if err := p.DeleteExpiredLoginFlows(ctx, currentTime, deleteLimit); err != nil {
+	if err := p.DeleteExpiredLoginFlows(ctx, expiresTime, deleteLimit); err != nil {
 		return err
 	}
 
 	p.r.Logger().Println("Cleaning up expired recovery flows")
-	if err := p.DeleteExpiredRecoveryFlows(ctx, currentTime, deleteLimit); err != nil {
+	if err := p.DeleteExpiredRecoveryFlows(ctx, expiresTime, deleteLimit); err != nil {
 		return err
 	}
 
 	p.r.Logger().Println("Cleaning up expired registation flows")
-	if err := p.DeleteExpiredRegistrationFlows(ctx, currentTime, deleteLimit); err != nil {
+	if err := p.DeleteExpiredRegistrationFlows(ctx, expiresTime, deleteLimit); err != nil {
 		return err
 	}
 
 	p.r.Logger().Println("Cleaning up expired settings flows")
-	if err := p.DeleteExpiredSettingsFlows(ctx, currentTime, deleteLimit); err != nil {
+	if err := p.DeleteExpiredSettingsFlows(ctx, expiresTime, deleteLimit); err != nil {
 		return err
 	}
 
 	p.r.Logger().Println("Cleaning up expired verification flows")
-	if err := p.DeleteExpiredVerificationFlows(ctx, currentTime, deleteLimit); err != nil {
+	if err := p.DeleteExpiredVerificationFlows(ctx, expiresTime, deleteLimit); err != nil {
 		return err
 	}
 
