@@ -16,7 +16,7 @@ It is recommended to run this command close to the SQL instance (e.g. same subne
 This decreases risk of failure and decreases time required.
 You can read in the database URL using the -e flag, for example:
 	export DSN=...
-	kratos migrate sql -e
+	kratos cleanup sql -e
 ### WARNING ###
 Before running this command on an existing database, create a back up!
 `,
