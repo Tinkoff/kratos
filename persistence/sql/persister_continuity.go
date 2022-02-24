@@ -48,7 +48,7 @@ func (p *Persister) DeleteExpiredContinuitySessions(ctx context.Context, expires
 		limit -= batch
 		// #nosec G201
 		count, err := p.GetConnection(ctx).RawQuery(fmt.Sprintf(
-			"DELETE FROM %s WHERE expires_at <= ? LIMIT ?",
+			"DELETE FROM `%s` WHERE `expires_at` <= ? LIMIT ?",
 			new(continuity.Container).TableName(ctx),
 		),
 			expiresAt,

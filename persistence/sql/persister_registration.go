@@ -41,7 +41,7 @@ func (p *Persister) DeleteExpiredRegistrationFlows(ctx context.Context, expiresA
 		limit -= batch
 		// #nosec G201
 		count, err := p.GetConnection(ctx).RawQuery(fmt.Sprintf(
-			"DELETE FROM %s WHERE expires_at <= ? LIMIT ?",
+			"DELETE FROM `%s` WHERE `expires_at` <= ? LIMIT ?",
 			new(registration.Flow).TableName(ctx),
 		),
 			expiresAt,

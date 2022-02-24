@@ -11,14 +11,14 @@ import (
 
 func NewCleanupSQLCmd() *cobra.Command {
 	c := &cobra.Command{
-		Use:   "sql <database-url>",
+		Use:   "cleanup",
 		Short: "Cleanup sql database from expired flows and sessions",
 		Long: `Run this command as frequently as you need.
 It is recommended to run this command close to the SQL instance (e.g. same subnet) instead of over the public internet.
 This decreases risk of failure and decreases time required.
 You can read in the database URL using the -e flag, for example:
 	export DSN=...
-	kratos cleanup sql -e
+	kratos cleanup -e
 ### optional params ###
 	--limit
 	--batch-size

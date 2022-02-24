@@ -98,7 +98,7 @@ func (p *Persister) DeleteExpiredRecoveryFlows(ctx context.Context, expiresAt ti
 		limit -= batch
 		// #nosec G201
 		count, err := p.GetConnection(ctx).RawQuery(fmt.Sprintf(
-			"DELETE FROM %s WHERE expires_at <= ? LIMIT ?",
+			"DELETE FROM `%s` WHERE `expires_at` <= ? LIMIT ?",
 			new(recovery.Flow).TableName(ctx),
 		),
 			expiresAt,

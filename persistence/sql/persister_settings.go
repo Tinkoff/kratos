@@ -49,7 +49,7 @@ func (p *Persister) DeleteExpiredSettingsFlows(ctx context.Context, expiresAt ti
 		limit -= batch
 		// #nosec G201
 		count, err := p.GetConnection(ctx).RawQuery(fmt.Sprintf(
-			"DELETE FROM %s WHERE expires_at <= ? LIMIT ?",
+			"DELETE FROM `%s` WHERE `expires_at` <= ? LIMIT ?",
 			new(settings.Flow).TableName(ctx),
 		),
 			expiresAt,

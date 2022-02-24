@@ -133,7 +133,7 @@ func (p *Persister) DeleteExpiredSessions(ctx context.Context, expiresAt time.Ti
 		limit -= batch
 		// #nosec G201
 		count, err := p.GetConnection(ctx).RawQuery(fmt.Sprintf(
-			"DELETE FROM %s WHERE expires_at <= ? LIMIT ?",
+			"DELETE FROM `%s` WHERE `expires_at` <= ? LIMIT ?",
 			corp.ContextualizeTableName(ctx, "sessions"),
 		),
 			expiresAt,

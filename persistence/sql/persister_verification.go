@@ -101,7 +101,7 @@ func (p *Persister) DeleteExpiredVerificationFlows(ctx context.Context, expiresA
 		limit -= batch
 		// #nosec G201
 		count, err := p.GetConnection(ctx).RawQuery(fmt.Sprintf(
-			"DELETE FROM %s WHERE expires_at <= ? LIMIT ?",
+			"DELETE FROM `%s` WHERE `expires_at` <= ? LIMIT ?",
 			new(verification.Flow).TableName(ctx),
 		),
 			expiresAt,
