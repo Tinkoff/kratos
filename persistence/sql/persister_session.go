@@ -128,17 +128,24 @@ func (p *Persister) RevokeSessionByToken(ctx context.Context, token string) erro
 	return nil
 }
 
-func (p *Persister) DeleteExpiredSessions(ctx context.Context, expiresAt time.Time, limit int) error {
-	// #nosec G201
-	err := p.GetConnection(ctx).RawQuery(fmt.Sprintf(
-		"DELETE FROM %s WHERE expires_at <= ? LIMIT ?",
-		corp.ContextualizeTableName(ctx, "sessions"),
-	),
-		expiresAt,
-		limit,
-	).Exec()
-	if err != nil {
-		return sqlcon.HandleError(err)
+func (p *Persister) DeleteExpiredSessions(ctx context.Context, expiresAt time.Time, limit, batch int) error {
+	for ok := true; ok; ok = batch <= limit {
+		limit -= batch
+		// #nosec G201
+		count, err := p.GetConnection(ctx).RawQuery(fmt.Sprintf(
+			"DELETE FROM %s WHERE expires_at <= ? LIMIT ?",
+			corp.ContextualizeTableName(ctx, "sessions"),
+		),
+			expiresAt,
+			batch,
+		).ExecWithCount()
+		if err != nil {
+			return sqlcon.HandleError(err)
+		}
+
+		if count == 0 {
+			break
+		}
 	}
 	return nil
 }

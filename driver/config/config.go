@@ -510,6 +510,38 @@ func (p *Config) DSN() string {
 	return ""
 }
 
+func (p *Config) CleanupBatchSize() int {
+	return p.Source().Int("batch-size")
+}
+
+func (p *Config) IsDeleteExpiredSessions() bool {
+	return p.Source().Bool("cleanup-sessions")
+}
+
+func (p *Config) IsDeleteExpiredContinuitySessions() bool {
+	return p.Source().Bool("cleanup-continuity-containers")
+}
+
+func (p *Config) IsDeleteExpiredLoginFlows() bool {
+	return p.Source().Bool("cleanup-login-flows")
+}
+
+func (p *Config) IsDeleteExpiredRecoveryFlows() bool {
+	return p.Source().Bool("cleanup-recovery-flows")
+}
+
+func (p *Config) IsDeleteExpiredRegistrationFlows() bool {
+	return p.Source().Bool("cleanup-registration-flows")
+}
+
+func (p *Config) IsDeleteExpiredSettingsFlows() bool {
+	return p.Source().Bool("cleanup-settings-flows")
+}
+
+func (p *Config) IsDeleteExpiredVerificationFlows() bool {
+	return p.Source().Bool("cleanup-verification-flows")
+}
+
 func (p *Config) DisableAPIFlowEnforcement() bool {
 	if p.IsInsecureDevMode() && os.Getenv("DEV_DISABLE_API_FLOW_ENFORCEMENT") == "true" {
 		p.l.Warn("Because \"DEV_DISABLE_API_FLOW_ENFORCEMENT=true\" and the \"--dev\" flag are set, self-service API flows will no longer check if the interaction is actually a browser flow. This is very dangerous as it allows bypassing of anti-CSRF measures, leaving the deployment highly vulnerable. This option should only be used for automated testing and never come close to real user data anywhere.")

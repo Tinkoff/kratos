@@ -43,17 +43,24 @@ func (p *Persister) DeleteContinuitySession(ctx context.Context, id uuid.UUID) e
 	return nil
 }
 
-func (p *Persister) DeleteExpiredContinuitySessions(ctx context.Context, expiresAt time.Time, limit int) error {
-	// #nosec G201
-	err := p.GetConnection(ctx).RawQuery(fmt.Sprintf(
-		"DELETE FROM %s WHERE expires_at <= ? LIMIT ?",
-		new(continuity.Container).TableName(ctx),
-	),
-		expiresAt,
-		limit,
-	).Exec()
-	if err != nil {
-		return sqlcon.HandleError(err)
+func (p *Persister) DeleteExpiredContinuitySessions(ctx context.Context, expiresAt time.Time, limit, batch int) error {
+	for ok := true; ok; ok = batch <= limit {
+		limit -= batch
+		// #nosec G201
+		count, err := p.GetConnection(ctx).RawQuery(fmt.Sprintf(
+			"DELETE FROM %s WHERE expires_at <= ? LIMIT ?",
+			new(continuity.Container).TableName(ctx),
+		),
+			expiresAt,
+			batch,
+		).ExecWithCount()
+		if err != nil {
+			return sqlcon.HandleError(err)
+		}
+
+		if count == 0 {
+			break
+		}
 	}
 	return nil
 }

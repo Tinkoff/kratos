@@ -8,7 +8,6 @@ import (
 
 	"github.com/gobuffalo/pop/v6"
 	"github.com/gofrs/uuid"
-
 	"github.com/ory/kratos/corp"
 	"github.com/ory/kratos/identity"
 	"github.com/ory/kratos/selfservice/flow/recovery"
@@ -94,17 +93,24 @@ func (p *Persister) DeleteRecoveryToken(ctx context.Context, token string) error
 	return p.GetConnection(ctx).RawQuery(fmt.Sprintf("DELETE FROM %s WHERE token=? AND nid = ?", new(link.RecoveryToken).TableName(ctx)), token, corp.ContextualizeNID(ctx, p.nid)).Exec()
 }
 
-func (p *Persister) DeleteExpiredRecoveryFlows(ctx context.Context, expiresAt time.Time, limit int) error {
-	// #nosec G201
-	err := p.GetConnection(ctx).RawQuery(fmt.Sprintf(
-		"DELETE FROM %s WHERE expires_at <= ? LIMIT ?",
-		new(recovery.Flow).TableName(ctx),
-	),
-		expiresAt,
-		limit,
-	).Exec()
-	if err != nil {
-		return sqlcon.HandleError(err)
+func (p *Persister) DeleteExpiredRecoveryFlows(ctx context.Context, expiresAt time.Time, limit, batch int) error {
+	for ok := true; ok; ok = batch <= limit {
+		limit -= batch
+		// #nosec G201
+		count, err := p.GetConnection(ctx).RawQuery(fmt.Sprintf(
+			"DELETE FROM %s WHERE expires_at <= ? LIMIT ?",
+			new(recovery.Flow).TableName(ctx),
+		),
+			expiresAt,
+			batch,
+		).ExecWithCount()
+		if err != nil {
+			return sqlcon.HandleError(err)
+		}
+
+		if count == 0 {
+			break
+		}
 	}
 	return nil
 }

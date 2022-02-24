@@ -5,9 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/ory/kratos/corp"
-
 	"github.com/gofrs/uuid"
+	"github.com/ory/kratos/corp"
 
 	"github.com/ory/x/sqlcon"
 
@@ -37,17 +36,24 @@ func (p *Persister) GetRegistrationFlow(ctx context.Context, id uuid.UUID) (*reg
 	return &r, nil
 }
 
-func (p *Persister) DeleteExpiredRegistrationFlows(ctx context.Context, expiresAt time.Time, limit int) error {
-	// #nosec G201
-	err := p.GetConnection(ctx).RawQuery(fmt.Sprintf(
-		"DELETE FROM %s WHERE expires_at <= ? LIMIT ?",
-		new(registration.Flow).TableName(ctx),
-	),
-		expiresAt,
-		limit,
-	).Exec()
-	if err != nil {
-		return sqlcon.HandleError(err)
+func (p *Persister) DeleteExpiredRegistrationFlows(ctx context.Context, expiresAt time.Time, limit, batch int) error {
+	for ok := true; ok; ok = batch <= limit {
+		limit -= batch
+		// #nosec G201
+		count, err := p.GetConnection(ctx).RawQuery(fmt.Sprintf(
+			"DELETE FROM %s WHERE expires_at <= ? LIMIT ?",
+			new(registration.Flow).TableName(ctx),
+		),
+			expiresAt,
+			batch,
+		).ExecWithCount()
+		if err != nil {
+			return sqlcon.HandleError(err)
+		}
+
+		if count == 0 {
+			break
+		}
 	}
 	return nil
 }

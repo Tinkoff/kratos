@@ -5,9 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/ory/kratos/corp"
-
 	"github.com/gobuffalo/pop/v6"
+	"github.com/ory/kratos/corp"
 
 	"github.com/gofrs/uuid"
 
@@ -54,17 +53,24 @@ func (p *Persister) ForceLoginFlow(ctx context.Context, id uuid.UUID) error {
 	})
 }
 
-func (p *Persister) DeleteExpiredLoginFlows(ctx context.Context, expiresAt time.Time, limit int) error {
-	// #nosec G201
-	err := p.GetConnection(ctx).RawQuery(fmt.Sprintf(
-		"DELETE FROM %s WHERE expires_at <= ? LIMIT ?",
-		new(login.Flow).TableName(ctx),
-	),
-		expiresAt,
-		limit,
-	).Exec()
-	if err != nil {
-		return sqlcon.HandleError(err)
+func (p *Persister) DeleteExpiredLoginFlows(ctx context.Context, expiresAt time.Time, limit, batch int) error {
+	for ok := true; ok; ok = batch <= limit {
+		limit -= batch
+		// #nosec G201
+		count, err := p.GetConnection(ctx).RawQuery(fmt.Sprintf(
+			"DELETE FROM %s WHERE expires_at <= ? LIMIT ?",
+			new(login.Flow).TableName(ctx),
+		),
+			expiresAt,
+			batch,
+		).ExecWithCount()
+		if err != nil {
+			return sqlcon.HandleError(err)
+		}
+
+		if count == 0 {
+			break
+		}
 	}
 	return nil
 }
