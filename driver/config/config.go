@@ -150,8 +150,6 @@ const (
 	ViperKeyWebAuthnRPID                                     = "selfservice.methods.webauthn.config.rp.id"
 	ViperKeyWebAuthnRPOrigin                                 = "selfservice.methods.webauthn.config.rp.origin"
 	ViperKeyWebAuthnRPIcon                                   = "selfservice.methods.webauthn.config.rp.issuer"
-	ViperKeyDatabaseCleanupKeepExpiresDuration               = "database.cleanup.keep_expires_duration"
-	ViperKeyDatabaseCleanupLimit                             = "database.cleanup.limit"
 	ViperKeyVersion                                          = "version"
 
 	ViperKeyContinuityName = "continuity.name"
@@ -510,8 +508,16 @@ func (p *Config) DSN() string {
 	return ""
 }
 
+func (p *Config) DatabaseCleanupLimit() int {
+	return p.p.IntF("limit", 1000)
+}
+
 func (p *Config) CleanupBatchSize() int {
-	return p.Source().Int("batch-size")
+	return p.p.IntF("batch-size", 100)
+}
+
+func (p *Config) DatabaseCleanupKeepExpiresDuration() time.Duration {
+	return p.p.DurationF("keep-if-younger", 24*90*time.Hour) // ~3 month
 }
 
 func (p *Config) IsDeleteExpiredSessions() bool {
@@ -1095,14 +1101,6 @@ func (p *Config) WebAuthnConfig() *webauthn.Config {
 			UserVerification: protocol.VerificationDiscouraged,
 		},
 	}
-}
-
-func (p *Config) DatabaseCleanupKeepExpiresDuration() time.Duration {
-	return p.p.DurationF(ViperKeyDatabaseCleanupKeepExpiresDuration, 24*90*time.Hour) // ~3 month
-}
-
-func (p *Config) DatabaseCleanupLimit() int {
-	return p.p.IntF(ViperKeyDatabaseCleanupLimit, 5)
 }
 
 func (p *Config) HasherPasswordHashingAlgorithm() string {

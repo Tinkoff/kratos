@@ -1,6 +1,8 @@
 package cleanup
 
 import (
+	"time"
+
 	"github.com/spf13/cobra"
 
 	"github.com/ory/kratos/cmd/cliclient"
@@ -18,7 +20,9 @@ You can read in the database URL using the -e flag, for example:
 	export DSN=...
 	kratos cleanup sql -e
 ### optional params ###
+	--limit
 	--batch-size
+    --keep-if-younger
 	--cleanup-sessions
 	--cleanup-continuity-containers
 	--cleanup-login-flows
@@ -40,7 +44,9 @@ Before running this command on an existing database, create a back up!
 
 	// optional parameters
 
-	c.Flags().IntP("batch-size", "b", 100, "Define how many records are deleted with each iteration. (default 100)")
+	c.Flags().IntP("limit", "l", 1000, "Define how many records are deleted. (default 1000)")
+	c.Flags().IntP("batch-size", "bs", 100, "Define how many records are deleted with each iteration. (default 100)")
+	c.Flags().DurationP("keep-if-younger", "t", 2160*time.Hour, "Keep database records that are younger than a specified duration e.g. 3000h.")
 	c.Flags().BoolP("cleanup-sessions", "sess", false, "If set then cleaning up expired sessions")
 	c.Flags().BoolP("cleanup-continuity-containers", "cnt", false, "If set then cleaning up expired continuity containers")
 	c.Flags().BoolP("cleanup-login-flows", "l", false, "If set then cleaning up expired login flows")

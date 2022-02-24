@@ -4,7 +4,6 @@ import (
 	"context"
 	"os"
 	"testing"
-	"time"
 
 	"github.com/ory/kratos/corp"
 
@@ -37,20 +36,18 @@ func NewConfigurationWithDefaults(t *testing.T) *config.Config {
 	c := config.MustNew(t, logrusx.New("", ""),
 		os.Stderr,
 		configx.WithValues(map[string]interface{}{
-			"log.level":                                       "trace",
-			config.ViperKeyDSN:                                dbal.SQLiteInMemory,
-			config.ViperKeyHasherArgon2ConfigMemory:           16384,
-			config.ViperKeyHasherArgon2ConfigIterations:       1,
-			config.ViperKeyHasherArgon2ConfigParallelism:      1,
-			config.ViperKeyHasherArgon2ConfigSaltLength:       16,
-			config.ViperKeyHasherBcryptCost:                   4,
-			config.ViperKeyHasherArgon2ConfigKeyLength:        16,
-			config.ViperKeyCourierSMTPURL:                     "smtp://foo:bar@baz.com/",
-			config.ViperKeySelfServiceBrowserDefaultReturnTo:  "https://www.ory.sh/redirect-not-set",
-			config.ViperKeyDefaultIdentitySchemaURL:           UnsetDefaultIdentitySchema,
-			config.ViperKeySecretsCipher:                      []string{"secret-thirty-two-character-long"},
-			config.ViperKeyDatabaseCleanupKeepExpiresDuration: 24 * 90 * time.Hour, // ~3 month
-			config.ViperKeyDatabaseCleanupLimit:               5,
+			"log.level":                                      "trace",
+			config.ViperKeyDSN:                               dbal.SQLiteInMemory,
+			config.ViperKeyHasherArgon2ConfigMemory:          16384,
+			config.ViperKeyHasherArgon2ConfigIterations:      1,
+			config.ViperKeyHasherArgon2ConfigParallelism:     1,
+			config.ViperKeyHasherArgon2ConfigSaltLength:      16,
+			config.ViperKeyHasherBcryptCost:                  4,
+			config.ViperKeyHasherArgon2ConfigKeyLength:       16,
+			config.ViperKeyCourierSMTPURL:                    "smtp://foo:bar@baz.com/",
+			config.ViperKeySelfServiceBrowserDefaultReturnTo: "https://www.ory.sh/redirect-not-set",
+			config.ViperKeyDefaultIdentitySchemaURL:          UnsetDefaultIdentitySchema,
+			config.ViperKeySecretsCipher:                     []string{"secret-thirty-two-character-long"},
 		}),
 		configx.SkipValidation(),
 	)
