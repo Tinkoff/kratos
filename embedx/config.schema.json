@@ -2152,7 +2152,7 @@
       "default": false,
       "description": "This is a CLI flag and environment variable and can not be set using the config file."
     },
-    "background-cleanup": {
+    "cleanup": {
       "type": "boolean",
       "default": false,
       "description": "This is a CLI flag and environment variable and can not be set using the config file."

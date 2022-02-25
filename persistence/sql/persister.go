@@ -164,7 +164,7 @@ func (p *Persister) CleanupDatabase(ctx context.Context) error {
 		return err
 	}
 
-	p.r.Logger().Println("Successfully cleaned up the SQL database!")
+	p.r.Logger().Println("Successfully cleaned expired database records!")
 	return nil
 }
 

@@ -946,8 +946,8 @@ func (p *Config) IsBackgroundCourierEnabled() bool {
 	return p.Source().Bool("watch-courier")
 }
 
-func (p *Config) IsBackgroundCleanupEnabled() bool {
-	return p.Source().Bool("background-cleanup")
+func (p *Config) IsCleanupEnabled() bool {
+	return p.Source().Bool("cleanup")
 }
 
 func (p *Config) CourierExposeMetricsPort() int {

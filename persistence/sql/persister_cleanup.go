@@ -27,7 +27,7 @@ const (
 	CleanupVerificationFlowTable
 )
 
-func CleanupTableName(ctx context.Context, typ CleanupTableNameType) string {
+func (typ CleanupTableNameType) TableName(ctx context.Context) string {
 	var s string
 	switch typ {
 	case CleanupCorpContextualizeTable:
@@ -58,7 +58,7 @@ type CleanupParams struct {
 func (p *Persister) Cleanup(ctx context.Context, opt CleanupParams) error {
 	for _, typ := range opt.Tables {
 
-		tableName := CleanupTableName(ctx, typ)
+		tableName := typ.TableName(ctx)
 		p.r.Logger().Println("Starting clean expired records for %q table", tableName)
 
 		for ok := true; ok; ok = opt.Batch <= opt.Limit {

@@ -49,9 +49,9 @@ func (h *CleanupHandler) CleanupSQL(cmd *cobra.Command, args []string) {
 	}
 
 	err := d.Init(cmd.Context(), driver.SkipNetworkInit)
-	cmdx.Must(err, "An error occurred initializing migrations: %s", err)
+	cmdx.Must(err, "An error occurred initializing cleanup: %s", err)
 
 	err = d.Persister().CleanupDatabase(cmd.Context())
-	cmdx.Must(err, "An error occurred while cleaning up expired data: %s", err)
-
+	cmdx.Must(err, "An error occurred while cleanup expired data: %s", err)
+	fmt.Println("Successfully cleanup!")
 }

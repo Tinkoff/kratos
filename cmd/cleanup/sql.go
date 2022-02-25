@@ -40,7 +40,6 @@ Before running this command on an existing database, create a back up!
 
 	configx.RegisterFlags(c.PersistentFlags())
 	c.Flags().BoolP("read-from-env", "e", false, "If set, reads the database connection string from the environment variable DSN or config file key dsn.")
-	c.Flags().BoolP("yes", "y", false, "If set all confirmation requests are accepted without user interaction.")
 
 	// optional parameters
 
