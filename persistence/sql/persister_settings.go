@@ -59,7 +59,7 @@ func (p *Persister) DeleteExpiredSettingsFlows(ctx context.Context, expiresAt ti
 			return sqlcon.HandleError(err)
 		}
 
-		if count == 0 {
+		if count == 0 || limit <= 0 {
 			break
 		}
 	}

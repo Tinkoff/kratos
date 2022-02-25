@@ -58,7 +58,7 @@ func (p *Persister) DeleteExpiredContinuitySessions(ctx context.Context, expires
 			return sqlcon.HandleError(err)
 		}
 
-		if count == 0 {
+		if count == 0 || limit <= 0 {
 			break
 		}
 	}

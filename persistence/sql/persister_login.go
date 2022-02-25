@@ -68,7 +68,7 @@ func (p *Persister) DeleteExpiredLoginFlows(ctx context.Context, expiresAt time.
 			return sqlcon.HandleError(err)
 		}
 
-		if count == 0 {
+		if count == 0 || limit <= 0 {
 			break
 		}
 	}

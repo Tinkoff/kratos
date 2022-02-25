@@ -143,7 +143,7 @@ func (p *Persister) DeleteExpiredSessions(ctx context.Context, expiresAt time.Ti
 			return sqlcon.HandleError(err)
 		}
 
-		if count == 0 {
+		if count == 0 || limit <= 0 {
 			break
 		}
 	}

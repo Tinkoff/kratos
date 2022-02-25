@@ -51,7 +51,7 @@ func (p *Persister) DeleteExpiredRegistrationFlows(ctx context.Context, expiresA
 			return sqlcon.HandleError(err)
 		}
 
-		if count == 0 {
+		if count == 0 || limit <= 0 {
 			break
 		}
 	}
