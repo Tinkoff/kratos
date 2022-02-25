@@ -3,8 +3,9 @@ package sql
 import (
 	"context"
 
-	"github.com/gofrs/uuid"
 	"github.com/ory/kratos/corp"
+
+	"github.com/gofrs/uuid"
 
 	"github.com/ory/x/sqlcon"
 

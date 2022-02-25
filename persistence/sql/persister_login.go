@@ -3,8 +3,9 @@ package sql
 import (
 	"context"
 
-	"github.com/gobuffalo/pop/v6"
 	"github.com/ory/kratos/corp"
+
+	"github.com/gobuffalo/pop/v6"
 
 	"github.com/gofrs/uuid"
 
