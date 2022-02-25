@@ -320,10 +320,12 @@ func doHttpCall(method string, url string, as AuthStrategy, body io.Reader) erro
 	as.apply(req)
 
 	resp, err := http.DefaultClient.Do(req)
-
 	if err != nil {
 		return err
-	} else if resp.StatusCode >= 400 {
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode >= 400 {
 		return fmt.Errorf("web hook failed with status code %v", resp.StatusCode)
 	}
 
