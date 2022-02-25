@@ -92,25 +92,3 @@ func (p *Persister) DeleteRecoveryToken(ctx context.Context, token string) error
 	/* #nosec G201 TableName is static */
 	return p.GetConnection(ctx).RawQuery(fmt.Sprintf("DELETE FROM %s WHERE token=? AND nid = ?", new(link.RecoveryToken).TableName(ctx)), token, corp.ContextualizeNID(ctx, p.nid)).Exec()
 }
-
-func (p *Persister) DeleteExpiredRecoveryFlows(ctx context.Context, expiresAt time.Time, limit, batch int) error {
-	for ok := true; ok; ok = batch <= limit {
-		limit -= batch
-		// #nosec G201
-		count, err := p.GetConnection(ctx).RawQuery(fmt.Sprintf(
-			"DELETE FROM `%s` WHERE `expires_at` <= ? LIMIT ?",
-			new(recovery.Flow).TableName(ctx),
-		),
-			expiresAt,
-			batch,
-		).ExecWithCount()
-		if err != nil {
-			return sqlcon.HandleError(err)
-		}
-
-		if count == 0 || limit <= 0 {
-			break
-		}
-	}
-	return nil
-}

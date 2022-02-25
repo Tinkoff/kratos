@@ -129,64 +129,39 @@ func (p *Persister) Ping() error {
 
 func (p *Persister) CleanupDatabase(ctx context.Context) error {
 	keepExpiresDuration := p.r.Config(ctx).DatabaseCleanupKeepExpiresDuration()
-	if keepExpiresDuration < 0 {
-		keepExpiresDuration = -keepExpiresDuration
+	params := CleanupParams{
+		Batch:     p.r.Config(ctx).CleanupBatchSize(),
+		Limit:     p.r.Config(ctx).DatabaseCleanupLimit(),
+		ExpiresAt: time.Now().Add(-keepExpiresDuration),
 	}
-
-	expiresTime := time.Now().Add(-keepExpiresDuration)
-	deleteLimit := p.r.Config(ctx).DatabaseCleanupLimit()
-	batchSize := p.r.Config(ctx).CleanupBatchSize()
 
 	p.r.Logger().Printf("Cleaning up first %d records older than %s by batches %d records\n",
-		deleteLimit, expiresTime, batchSize)
+		params.Limit, params.ExpiresAt, params.Batch)
 
 	if p.r.Config(ctx).IsDeleteExpiredSessions() {
-		p.r.Logger().Println("Cleaning up expired sessions")
-		if err := p.DeleteExpiredSessions(ctx, expiresTime, deleteLimit, batchSize); err != nil {
-			return err
-		}
+		params.Tables = append(params.Tables, CleanupCorpContextualizeTable)
 	}
-
 	if p.r.Config(ctx).IsDeleteExpiredContinuitySessions() {
-		p.r.Logger().Println("Cleaning up expired continuity containers")
-		if err := p.DeleteExpiredContinuitySessions(ctx, expiresTime, deleteLimit, batchSize); err != nil {
-			return err
-		}
+		params.Tables = append(params.Tables, CleanupContinuityContainerTable)
 	}
-
-	if p.r.Config(ctx).IsDeleteExpiredLoginFlows() {
-		p.r.Logger().Println("Cleaning up expired login flows")
-		if err := p.DeleteExpiredLoginFlows(ctx, expiresTime, deleteLimit, batchSize); err != nil {
-			return err
-		}
-	}
-
-	if p.r.Config(ctx).IsDeleteExpiredRecoveryFlows() {
-		p.r.Logger().Println("Cleaning up expired recovery flows")
-		if err := p.DeleteExpiredRecoveryFlows(ctx, expiresTime, deleteLimit, batchSize); err != nil {
-			return err
-		}
-	}
-
-	if p.r.Config(ctx).IsDeleteExpiredRegistrationFlows() {
-		p.r.Logger().Println("Cleaning up expired registation flows")
-		if err := p.DeleteExpiredRegistrationFlows(ctx, expiresTime, deleteLimit, batchSize); err != nil {
-			return err
-		}
-	}
-
 	if p.r.Config(ctx).IsDeleteExpiredSettingsFlows() {
-		p.r.Logger().Println("Cleaning up expired settings flows")
-		if err := p.DeleteExpiredSettingsFlows(ctx, expiresTime, deleteLimit, batchSize); err != nil {
-			return err
-		}
+		params.Tables = append(params.Tables, CleanupSettingsFlowTable)
+	}
+	if p.r.Config(ctx).IsDeleteExpiredLoginFlows() {
+		params.Tables = append(params.Tables, CleanupLoginFlowTable)
+	}
+	if p.r.Config(ctx).IsDeleteExpiredRecoveryFlows() {
+		params.Tables = append(params.Tables, CleanupRecoveryFlowTable)
+	}
+	if p.r.Config(ctx).IsDeleteExpiredRegistrationFlows() {
+		params.Tables = append(params.Tables, CleanupRegistrationFlowTable)
+	}
+	if p.r.Config(ctx).IsDeleteExpiredVerificationFlows() {
+		params.Tables = append(params.Tables, CleanupVerificationFlowTable)
 	}
 
-	if p.r.Config(ctx).IsDeleteExpiredVerificationFlows() {
-		p.r.Logger().Println("Cleaning up expired verification flows")
-		if err := p.DeleteExpiredVerificationFlows(ctx, expiresTime, deleteLimit, batchSize); err != nil {
-			return err
-		}
+	if err := p.Cleanup(ctx, params); err != nil {
+		return err
 	}
 
 	p.r.Logger().Println("Successfully cleaned up the SQL database!")

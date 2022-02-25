@@ -2,8 +2,6 @@ package sql
 
 import (
 	"context"
-	"fmt"
-	"time"
 
 	"github.com/gofrs/uuid"
 
@@ -43,25 +41,4 @@ func (p *Persister) UpdateSettingsFlow(ctx context.Context, r *settings.Flow) er
 	cp := *r
 	cp.NID = corp.ContextualizeNID(ctx, p.nid)
 	return p.update(ctx, cp)
-}
-func (p *Persister) DeleteExpiredSettingsFlows(ctx context.Context, expiresAt time.Time, limit, batch int) error {
-	for ok := true; ok; ok = batch <= limit {
-		limit -= batch
-		// #nosec G201
-		count, err := p.GetConnection(ctx).RawQuery(fmt.Sprintf(
-			"DELETE FROM `%s` WHERE `expires_at` <= ? LIMIT ?",
-			new(settings.Flow).TableName(ctx),
-		),
-			expiresAt,
-			batch,
-		).ExecWithCount()
-		if err != nil {
-			return sqlcon.HandleError(err)
-		}
-
-		if count == 0 || limit <= 0 {
-			break
-		}
-	}
-	return nil
 }

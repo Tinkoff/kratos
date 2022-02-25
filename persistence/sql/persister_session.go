@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"time"
 
 	"github.com/pkg/errors"
 
@@ -124,28 +123,6 @@ func (p *Persister) RevokeSessionByToken(ctx context.Context, token string) erro
 	}
 	if count == 0 {
 		return errors.WithStack(sqlcon.ErrNoRows)
-	}
-	return nil
-}
-
-func (p *Persister) DeleteExpiredSessions(ctx context.Context, expiresAt time.Time, limit, batch int) error {
-	for ok := true; ok; ok = batch <= limit {
-		limit -= batch
-		// #nosec G201
-		count, err := p.GetConnection(ctx).RawQuery(fmt.Sprintf(
-			"DELETE FROM `%s` WHERE `expires_at` <= ? LIMIT ?",
-			corp.ContextualizeTableName(ctx, "sessions"),
-		),
-			expiresAt,
-			batch,
-		).ExecWithCount()
-		if err != nil {
-			return sqlcon.HandleError(err)
-		}
-
-		if count == 0 || limit <= 0 {
-			break
-		}
 	}
 	return nil
 }

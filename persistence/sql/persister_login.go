@@ -2,8 +2,6 @@ package sql
 
 import (
 	"context"
-	"fmt"
-	"time"
 
 	"github.com/gobuffalo/pop/v6"
 	"github.com/ory/kratos/corp"
@@ -51,26 +49,4 @@ func (p *Persister) ForceLoginFlow(ctx context.Context, id uuid.UUID) error {
 		lr.Refresh = true
 		return tx.Save(lr, "nid")
 	})
-}
-
-func (p *Persister) DeleteExpiredLoginFlows(ctx context.Context, expiresAt time.Time, limit, batch int) error {
-	for ok := true; ok; ok = batch <= limit {
-		limit -= batch
-		// #nosec G201
-		count, err := p.GetConnection(ctx).RawQuery(fmt.Sprintf(
-			"DELETE FROM `%s` WHERE `expires_at` <= ? LIMIT ?",
-			new(login.Flow).TableName(ctx),
-		),
-			expiresAt,
-			batch,
-		).ExecWithCount()
-		if err != nil {
-			return sqlcon.HandleError(err)
-		}
-
-		if count == 0 || limit <= 0 {
-			break
-		}
-	}
-	return nil
 }
