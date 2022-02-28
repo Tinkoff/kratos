@@ -37,18 +37,17 @@ Before running this command on an existing database, create a back up!
 			cliclient.NewCleanupHandler().CleanupSQL(cmd, args)
 		},
 	}
-
 	configx.RegisterFlags(c.PersistentFlags())
 
 	c.Flags().IntP("limit", "l", 1000, "Define how many records are deleted. (default 1000)")
-	c.Flags().IntP("batch-size", "bs", 100, "Define how many records are deleted with each iteration. (default 100)")
-	c.Flags().DurationP("keep-if-younger", "t", 2160*time.Hour, "Keep database records that are younger than a specified duration e.g. 3000h.")
-	c.Flags().BoolP("cleanup-sessions", "sess", false, "If set then cleaning up expired sessions")
-	c.Flags().BoolP("cleanup-continuity-containers", "cnt", false, "If set then cleaning up expired continuity containers")
-	c.Flags().BoolP("cleanup-login-flows", "l", false, "If set then cleaning up expired login flows")
-	c.Flags().BoolP("cleanup-recovery-flows", "rec", false, "If set then cleaning up expired recovery flows")
-	c.Flags().BoolP("cleanup-registration-flows", "reg", false, "If set then cleaning up expired registation flows")
-	c.Flags().BoolP("cleanup-settings-flows", "s", false, "If set then cleaning up expired settings flows")
+	c.Flags().IntP("batch-size", "b", 100, "Define how many records are deleted with each iteration. (default 100)")
+	c.Flags().DurationP("keep-if-younger", "k", 2160*time.Hour, "Keep database records that are younger than a specified duration e.g. 3000h.")
+	c.Flags().BoolP("cleanup-sessions", "s", false, "If set then cleaning up expired sessions")
+	c.Flags().BoolP("cleanup-continuity-containers", "c", false, "If set then cleaning up expired continuity containers")
+	c.Flags().BoolP("cleanup-login-flows", "i", false, "If set then cleaning up expired login flows")
+	c.Flags().BoolP("cleanup-recovery-flows", "r", false, "If set then cleaning up expired recovery flows")
+	c.Flags().BoolP("cleanup-registration-flows", "g", false, "If set then cleaning up expired registation flows")
+	c.Flags().BoolP("cleanup-settings-flows", "t", false, "If set then cleaning up expired settings flows")
 	c.Flags().BoolP("cleanup-verification-flows", "v", false, "If set then cleaning up expired verification flows")
 
 	return c
