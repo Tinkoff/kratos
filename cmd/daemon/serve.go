@@ -7,33 +7,17 @@ import (
 	"sync"
 	"time"
 
-	"github.com/ory/kratos/selfservice/flow/recovery"
-
-	"github.com/ory/x/reqlog"
-
-	"github.com/ory/kratos/cmd/courier"
-	"github.com/ory/kratos/driver/config"
-
-	"github.com/rs/cors"
-
-	prometheus "github.com/ory/x/prometheusx"
-
 	"github.com/ory/analytics-go/v4"
-
-	"github.com/ory/x/healthx"
-	"github.com/ory/x/networkx"
-
-	"github.com/spf13/cobra"
-	"github.com/urfave/negroni"
-
 	"github.com/ory/graceful"
-	"github.com/ory/x/metricsx"
-
+	"github.com/ory/kratos/cmd/cleanup"
+	"github.com/ory/kratos/cmd/courier"
 	"github.com/ory/kratos/driver"
+	"github.com/ory/kratos/driver/config"
 	"github.com/ory/kratos/identity"
 	"github.com/ory/kratos/selfservice/errorx"
 	"github.com/ory/kratos/selfservice/flow/login"
 	"github.com/ory/kratos/selfservice/flow/logout"
+	"github.com/ory/kratos/selfservice/flow/recovery"
 	"github.com/ory/kratos/selfservice/flow/registration"
 	"github.com/ory/kratos/selfservice/flow/settings"
 	"github.com/ory/kratos/selfservice/flow/verification"
@@ -41,6 +25,14 @@ import (
 	"github.com/ory/kratos/selfservice/strategy/oidc"
 	"github.com/ory/kratos/session"
 	"github.com/ory/kratos/x"
+	"github.com/ory/x/healthx"
+	"github.com/ory/x/metricsx"
+	"github.com/ory/x/networkx"
+	prometheus "github.com/ory/x/prometheusx"
+	"github.com/ory/x/reqlog"
+	"github.com/rs/cors"
+	"github.com/spf13/cobra"
+	"github.com/urfave/negroni"
 )
 
 type options struct {
@@ -276,6 +268,10 @@ func bgTasks(d driver.Registry, wg *sync.WaitGroup, cmd *cobra.Command, args []s
 
 	if d.Config(ctx).IsBackgroundCourierEnabled() {
 		go courier.Watch(ctx, d)
+	}
+
+	if d.Config(ctx).IsCleanupEnabled() {
+		go cleanup.Execute(ctx, d)
 	}
 }
 

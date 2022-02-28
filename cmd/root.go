@@ -5,19 +5,16 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/ory/kratos/driver/config"
-
+	"github.com/ory/kratos/cmd/cleanup"
 	"github.com/ory/kratos/cmd/courier"
 	"github.com/ory/kratos/cmd/hashers"
-
-	"github.com/ory/kratos/cmd/remote"
-
 	"github.com/ory/kratos/cmd/identities"
 	"github.com/ory/kratos/cmd/jsonnet"
 	"github.com/ory/kratos/cmd/migrate"
+	"github.com/ory/kratos/cmd/remote"
 	"github.com/ory/kratos/cmd/serve"
+	"github.com/ory/kratos/driver/config"
 	"github.com/ory/x/cmdx"
-
 	"github.com/spf13/cobra"
 )
 
@@ -34,6 +31,7 @@ func NewRootCmd() (cmd *cobra.Command) {
 	remote.RegisterCommandRecursive(cmd)
 	hashers.RegisterCommandRecursive(cmd)
 	courier.RegisterCommandRecursive(cmd)
+	cleanup.RegisterCommandRecursive(cmd)
 
 	cmd.AddCommand(cmdx.Version(&config.Version, &config.Commit, &config.Date))
 

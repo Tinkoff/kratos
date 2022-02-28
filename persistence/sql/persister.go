@@ -4,6 +4,7 @@ import (
 	"context"
 	"embed"
 	"fmt"
+	"time"
 
 	"github.com/ory/x/fsx"
 
@@ -124,6 +125,47 @@ func (p *Persister) Ping() error {
 
 	// This can not be contextualized because of some gobuffalo/pop limitations.
 	return errors.WithStack(p.c.Store.(pinger).Ping())
+}
+
+func (p *Persister) CleanupDatabase(ctx context.Context) error {
+	keepExpiresDuration := p.r.Config(ctx).DatabaseCleanupKeepExpiresDuration()
+	params := CleanupParams{
+		Batch:     p.r.Config(ctx).CleanupBatchSize(),
+		Limit:     p.r.Config(ctx).DatabaseCleanupLimit(),
+		ExpiresAt: time.Now().Add(-keepExpiresDuration),
+	}
+
+	p.r.Logger().Printf("Cleaning up first %d records older than %s by batches %d records\n",
+		params.Limit, params.ExpiresAt, params.Batch)
+
+	if p.r.Config(ctx).IsDeleteExpiredSessions() {
+		params.Tables = append(params.Tables, CleanupCorpContextualizeTable)
+	}
+	if p.r.Config(ctx).IsDeleteExpiredContinuitySessions() {
+		params.Tables = append(params.Tables, CleanupContinuityContainerTable)
+	}
+	if p.r.Config(ctx).IsDeleteExpiredSettingsFlows() {
+		params.Tables = append(params.Tables, CleanupSettingsFlowTable)
+	}
+	if p.r.Config(ctx).IsDeleteExpiredLoginFlows() {
+		params.Tables = append(params.Tables, CleanupLoginFlowTable)
+	}
+	if p.r.Config(ctx).IsDeleteExpiredRecoveryFlows() {
+		params.Tables = append(params.Tables, CleanupRecoveryFlowTable)
+	}
+	if p.r.Config(ctx).IsDeleteExpiredRegistrationFlows() {
+		params.Tables = append(params.Tables, CleanupRegistrationFlowTable)
+	}
+	if p.r.Config(ctx).IsDeleteExpiredVerificationFlows() {
+		params.Tables = append(params.Tables, CleanupVerificationFlowTable)
+	}
+
+	if err := p.Cleanup(ctx, params); err != nil {
+		return err
+	}
+
+	p.r.Logger().Println("Successfully cleaned expired database records!")
+	return nil
 }
 
 type quotable interface {
