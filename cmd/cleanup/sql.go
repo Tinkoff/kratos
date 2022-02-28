@@ -16,9 +16,9 @@ func NewCleanupSQLCmd() *cobra.Command {
 		Long: `Run this command as frequently as you need.
 It is recommended to run this command close to the SQL instance (e.g. same subnet) instead of over the public internet.
 This decreases risk of failure and decreases time required.
-You can read in the database URL using the -e flag, for example:
+You can read in the database URL, for example:
 	export DSN=...
-	kratos cleanup -e
+	kratos cleanup
 ### optional params ###
 	--limit
 	--batch-size
@@ -39,9 +39,6 @@ Before running this command on an existing database, create a back up!
 	}
 
 	configx.RegisterFlags(c.PersistentFlags())
-	c.Flags().BoolP("read-from-env", "e", false, "If set, reads the database connection string from the environment variable DSN or config file key dsn.")
-
-	// optional parameters
 
 	c.Flags().IntP("limit", "l", 1000, "Define how many records are deleted. (default 1000)")
 	c.Flags().IntP("batch-size", "bs", 100, "Define how many records are deleted with each iteration. (default 100)")

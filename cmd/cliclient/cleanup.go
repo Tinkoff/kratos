@@ -5,10 +5,8 @@ import (
 	"os"
 
 	"github.com/ory/kratos/driver"
-	"github.com/ory/kratos/driver/config"
 	"github.com/ory/x/cmdx"
 	"github.com/ory/x/configx"
-	"github.com/ory/x/flagx"
 	"github.com/spf13/cobra"
 )
 
@@ -21,31 +19,17 @@ func NewCleanupHandler() *CleanupHandler {
 func (h *CleanupHandler) CleanupSQL(cmd *cobra.Command, args []string) {
 	var d driver.Registry
 
-	if flagx.MustGetBool(cmd, "read-from-env") {
-		d = driver.NewWithoutInit(
-			cmd.Context(),
-			cmd.ErrOrStderr(),
-			configx.WithFlags(cmd.Flags()),
-			configx.SkipValidation())
-		if len(d.Config(cmd.Context()).DSN()) == 0 {
-			fmt.Println(cmd.UsageString())
-			fmt.Println("")
-			fmt.Println("When using flag -e, environment variable DSN must be set")
-			os.Exit(1)
-			return
-		}
-	} else {
-		if len(args) != 1 {
-			fmt.Println(cmd.UsageString())
-			os.Exit(1)
-			return
-		}
-		d = driver.NewWithoutInit(
-			cmd.Context(),
-			cmd.ErrOrStderr(),
-			configx.WithFlags(cmd.Flags()),
-			configx.SkipValidation(),
-			configx.WithValue(config.ViperKeyDSN, args[0]))
+	d = driver.NewWithoutInit(
+		cmd.Context(),
+		cmd.ErrOrStderr(),
+		configx.WithFlags(cmd.Flags()),
+		configx.SkipValidation())
+	if len(d.Config(cmd.Context()).DSN()) == 0 {
+		fmt.Println(cmd.UsageString())
+		fmt.Println("")
+		fmt.Println("Environment variable DSN must be set")
+		os.Exit(1)
+		return
 	}
 
 	err := d.Init(cmd.Context(), driver.SkipNetworkInit)
