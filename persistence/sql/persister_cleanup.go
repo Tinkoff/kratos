@@ -56,16 +56,28 @@ type CleanupParams struct {
 }
 
 func (p *Persister) Cleanup(ctx context.Context, opt CleanupParams) error {
+	const stmt = `
+DELETE FROM "%s"
+WHERE ctid IN (
+    SELECT ctid
+    FROM "%s"
+	WHERE expires_at < ?
+    ORDER BY expires_at
+    LIMIT ?
+)`
+	if opt.Limit < opt.Batch {
+		opt.Batch = opt.Limit
+	}
 	for _, typ := range opt.Tables {
 
 		tableName := typ.TableName(ctx)
-		p.r.Logger().Println("Starting clean expired records for %q table", tableName)
+		p.r.Logger().Printf("Starting clean expired records for %q table", tableName)
 
 		for ok := true; ok; ok = opt.Batch <= opt.Limit {
 			opt.Limit -= opt.Batch
 			// #nosec G201
 			count, err := p.GetConnection(ctx).RawQuery(
-				fmt.Sprintf("DELETE FROM `%s` WHERE `expires_at` <= ? LIMIT ?", tableName),
+				fmt.Sprintf(stmt, tableName, tableName),
 				opt.ExpiresAt,
 				opt.Batch,
 			).ExecWithCount()
@@ -77,7 +89,7 @@ func (p *Persister) Cleanup(ctx context.Context, opt CleanupParams) error {
 				break
 			}
 		}
-		p.r.Logger().Println("Done. Expired records in %q table cleaned", tableName)
+		p.r.Logger().Printf("Done. Expired records in %q table cleaned", tableName)
 	}
 	return nil
 }
