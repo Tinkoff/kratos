@@ -4,6 +4,7 @@ import (
 	"context"
 	"io"
 
+	sageformatter "github.com/Tinkoff/logrus-sage-formatter"
 	"github.com/ory/kratos/driver/config"
 	"github.com/ory/x/configx"
 	"github.com/ory/x/logrusx"
@@ -20,7 +21,7 @@ func New(ctx context.Context, stdOutOrErr io.Writer, opts ...configx.OptionModif
 }
 
 func NewWithoutInit(ctx context.Context, stdOutOrErr io.Writer, opts ...configx.OptionModifier) Registry {
-	l := logrusx.New("Ory Kratos", config.Version)
+	l := logrusx.New("Ory Kratos", config.Version, logrusx.ForceFormatter(sageformatter.NewFormatter(sageformatter.MetadataFromEnv)))
 	c, err := config.New(ctx, l, stdOutOrErr, opts...)
 	if err != nil {
 		l.WithError(err).Fatal("Unable to instantiate configuration.")

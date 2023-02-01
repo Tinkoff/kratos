@@ -107,6 +107,8 @@ github.com/PuerkitoBio/urlesc v0.0.0-20170810143723-de5bf2ad4578/go.mod h1:uGdko
 github.com/Shopify/logrus-bugsnag v0.0.0-20171204204709-577dee27f20d/go.mod h1:HI8ITrYtUY+O+ZhtlqUnD8+KwNPOyugEhfP9fdUIaEQ=
 github.com/Shopify/sarama v1.19.0/go.mod h1:FVkBWblsNy7DGZRfXLU0O9RCGt5g3g3yEuWXgklEdEo=
 github.com/Shopify/toxiproxy v2.1.4+incompatible/go.mod h1:OXgGpZ6Cli1/URJOF1DMxUHB2q5Ap20/P/eIdh4G0pI=
+github.com/Tinkoff/logrus-sage-formatter v0.0.0-20230201084633-e547158441b3 h1:dTJKvhdq7rYlZ/e5xtmTnO9aK6qp4Fs92AGqPejbokI=
+github.com/Tinkoff/logrus-sage-formatter v0.0.0-20230201084633-e547158441b3/go.mod h1:UgQTgepd5cXhTu9A5dkO0j4maE5hKXaYxMV2zhE8cO4=
 github.com/VividCortex/gohistogram v1.0.0/go.mod h1:Pf5mBqqDxYaXu3hDrrU+w6nw50o/4+TcAqDqk/vUH7g=
 github.com/aeneasr/cupaloy/v2 v2.6.1-0.20210924214125-3dfdd01210a3 h1:/SkiUr3JJzun9QN9cpUVCPri2ZwOFJ3ani+F3vdoCiY=
 github.com/aeneasr/cupaloy/v2 v2.6.1-0.20210924214125-3dfdd01210a3/go.mod h1:bm7JXdkRd4BHJk9HpwqAI8BoAY1lps46Enkdqw6aRX0=
@@ -201,6 +203,8 @@ github.com/bwmarrin/discordgo v0.23.0 h1://ARp8qUrRZvDGMkfAjtcC20WOvsMtTgi+KrdKn
 github.com/bwmarrin/discordgo v0.23.0/go.mod h1:c1WtWUGN6nREDmzIpyTp/iD3VYt4Fpx+bVyfBG7JE+M=
 github.com/bxcodec/faker/v3 v3.3.1 h1:G7uldFk+iO/ES7W4v7JlI/WU9FQ6op9VJ15YZlDEhGQ=
 github.com/bxcodec/faker/v3 v3.3.1/go.mod h1:gF31YgnMSMKgkvl+fyEo1xuSMbEuieyqfeslGYFjneM=
+github.com/caarlos0/env/v6 v6.7.2 h1:Jiy2dBHvNgCfNGMP0hOZW6jHUbiENvP+VWDtLz4n1Kg=
+github.com/caarlos0/env/v6 v6.7.2/go.mod h1:FE0jGiAnQqtv2TenJ4KTa8+/T2Ss8kdS5s1VEjasoN0=
 github.com/casbin/casbin/v2 v2.1.2/go.mod h1:YcPU1XXisHhLzuxH9coDNf2FbKpjGlbCg3n9yuLkIJQ=
 github.com/cenkalti/backoff v2.1.1+incompatible/go.mod h1:90ReRw6GdpyfrHakVjL/QHaoyV4aDUVVkXQJJJ3NXXM=
 github.com/cenkalti/backoff v2.2.1+incompatible h1:tNowT99t7UNflLxfYYSlKYsBpXdEet03Pg2g16Swow4=
@@ -1355,6 +1359,8 @@ github.com/markbates/safe v1.0.1/go.mod h1:nAqgmRi7cY2nqMc92/bSEeQA+R4OheNU2T1kN
 github.com/markbates/sigtx v1.0.0/go.mod h1:QF1Hv6Ic6Ca6W+T+DL0Y/ypborFKyvUY9HmuCD4VeTc=
 github.com/markbates/willie v1.0.9/go.mod h1:fsrFVWl91+gXpx/6dv715j7i11fYPfZ9ZGfH0DQzY7w=
 github.com/marstr/guid v1.1.0/go.mod h1:74gB1z2wpxxInTG6yaqA7KrtM0NZ+RbrcqDvYHefzho=
+github.com/matryer/is v1.4.0 h1:sosSmIWwkYITGrxZ25ULNDeKiMNzFSr4V/eqBQP0PeE=
+github.com/matryer/is v1.4.0/go.mod h1:8I/i5uYgLzgsgEloJE1U6xx5HkBQpAZvepWuujKwMRU=
 github.com/mattn/go-colorable v0.0.9/go.mod h1:9vuHe8Xs5qXnSaW/c/ABM9alt+Vo+STaOChaDxuIBZU=
 github.com/mattn/go-colorable v0.1.1/go.mod h1:FuOcm+DKB9mbwrcAfNl7/TZVBZ6rcnceauSikq3lYCQ=
 github.com/mattn/go-colorable v0.1.2/go.mod h1:U0ppj6V5qS13XJ6of8GYAs25YV2eR4EVcfRqFIhoBtE=
