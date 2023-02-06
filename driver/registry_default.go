@@ -22,6 +22,7 @@ import (
 
 	"github.com/ory/kratos/corp"
 
+	sageformatter "github.com/Tinkoff/logrus-sage-formatter"
 	prometheus "github.com/ory/x/prometheusx"
 
 	"github.com/ory/kratos/cipher"
@@ -357,7 +358,11 @@ func (m *RegistryDefault) Writer() herodot.Writer {
 
 func (m *RegistryDefault) Logger() *logrusx.Logger {
 	if m.l == nil {
-		m.l = logrusx.New("Ory Kratos", config.Version)
+		m.l = logrusx.New(
+			"Ory Kratos",
+			config.Version,
+			logrusx.ForceFormatter(sageformatter.NewFormatter(sageformatter.MetadataFromEnv)),
+		)
 	}
 	return m.l
 }

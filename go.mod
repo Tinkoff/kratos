@@ -22,6 +22,7 @@ replace (
 require (
 	github.com/Masterminds/semver v1.5.0 // indirect
 	github.com/Masterminds/sprig/v3 v3.0.0
+	github.com/Tinkoff/logrus-sage-formatter v0.0.0-20230201084633-e547158441b3
 	github.com/arbovm/levenshtein v0.0.0-20160628152529-48b4e1c0c4d0
 	github.com/avast/retry-go/v3 v3.1.1
 	github.com/bradleyjkemp/cupaloy/v2 v2.6.0
